@@ -1,8 +1,6 @@
 FROM maven:3.8.6-eclipse-temurin-17-alpine AS maven
-#FROM maven:3.8.6-openjdk-17-slim AS maven
 
 WORKDIR /usr/src/app
-#COPY . /usr/src/app
 
 COPY pom.xml .
 RUN mvn dependency:go-offline
