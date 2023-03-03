@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  product-service-testing:
+#    platform: 'linux/amd64'
+    image: 'product-service-testing:latest'
+    container_name: product-service-testing
+    build:
+      context: product-service-testing
+      dockerfile: Dockerfile
+    depends_on:
+      - product-testing-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://product-testing-db:5432/product_testing_db
+      - SPRING_DATASOURCE_USERNAME=product_testing_db
+      - SPRING_DATASOURCE_PASSWORD=product_testing_db
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=8081
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"
+
+  product-testing-db:
+    image: 'postgres:15-alpine'
+    container_name: product-testing-db
+    environment:
+      - POSTGRES_USER=product_testing_db
+      - POSTGRES_PASSWORD=product_testing_db
+      - POSTGRES_DB=product_testing_db
+    volumes:
+      - product_testing_db:/var/lib/postgresql/data
+    ports:
+      - "5439:5432"
+
+volumes:
+  product_testing_db:

@@ -1,0 +1,58 @@
+stages:
+  - build
+  - test
+  - deploy
+
+cache:
+  paths:
+    - .m2/repository
+    - target
+
+variables:
+  MAVEN_OPTS: -Dmaven.repo.local=.m2/repository
+
+build-job:
+  stage: build
+  image: maven:latest
+  script:
+    - |
+      cd product-service-testing
+      mvn compile
+
+
+unit-test-job:
+  stage: test
+  image: maven:latest
+  script:
+    - |
+      cd product-service-testing
+      mvn test
+
+deploy-job:
+  stage: deploy
+  environment: production
+  image: docker:cli
+  variables:
+    SECURE_FILES_DOWNLOAD_PATH: './download'
+    # DOCKER_HOST: "ssh://ec2-user@ec2-44-201-214-177.compute-1.amazonaws.com"
+    # DOCKER_HOST: "tcp://ec2-35-171-168-3.compute-1.amazonaws.com:2376"
+    DOCKER_HOST: "tcp://ec2-35-77-220-235.ap-northeast-1.compute.amazonaws.com:2376"
+    DOCKER_TLS_VERIFY: "1"
+  script:
+    - |
+      apk update
+      apk add bash
+      apk add curl
+      apk add make
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+    - |
+      mkdir -pv ~/.docker
+      cp -r ./download/* ~/.docker/
+    # - |
+    #   docker context create  --docker host=ssh://ec2-user@ec2-44-201-214-177.compute-1.amazonaws.com --description="Remote engine" my-docker-server-remote
+    #   docker context use my-docker-server-remote
+    #   eval `ssh-agent -s`
+    #   chmod 400 docker-server.pem
+    #   ssh-add docker-server.pem
+    #   docker info
+    - make
