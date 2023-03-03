@@ -21,6 +21,26 @@ services:
     ports:
       - "8081:8081"
 
+  category-service:
+    #    platform: 'linux/amd64'
+    image: 'category-service:latest'
+    container_name: category-service
+    build:
+      context: category-service
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/db
+      - SPRING_DATASOURCE_USERNAME=db
+      - SPRING_DATASOURCE_PASSWORD=db
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SERVER_PORT=8083
+    expose:
+      - "8083"
+    ports:
+      - "8083:8083"
+
   product-testing-db:
     image: 'postgres:15-alpine'
     container_name: product-testing-db
@@ -33,5 +53,18 @@ services:
     ports:
       - "5439:5432"
 
+  db:
+    image: 'postgres:15-alpine'
+    container_name: db
+    environment:
+      - POSTGRES_USER=db
+      - POSTGRES_PASSWORD=db
+      - POSTGRES_DB=db
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - "5438:5432"
+
 volumes:
   product_testing_db:
+  db:

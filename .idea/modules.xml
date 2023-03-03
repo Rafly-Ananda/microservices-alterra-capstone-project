@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/category-service/category-service.iml" filepath="$PROJECT_DIR$/category-service/category-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/microservices-capstone.iml" filepath="$PROJECT_DIR$/microservices-capstone.iml" />
       <module fileurl="file://$PROJECT_DIR$/product-service-testing/product-service-testing.iml" filepath="$PROJECT_DIR$/product-service-testing/product-service-testing.iml" />
     </modules>
