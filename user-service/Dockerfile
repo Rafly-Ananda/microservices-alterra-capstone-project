@@ -9,7 +9,7 @@ COPY src/ src/
 RUN mvn package -DskipTests
 
 FROM openjdk:17
-ARG JAR_FILE=product-service-testing-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=user-service-0.0.1-SNAPSHOT.jar
 
 WORKDIR /opt/app/
 
@@ -17,4 +17,4 @@ COPY --from=maven /usr/src/app/target/${JAR_FILE} /opt/app
 
 EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "product-service-testing-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "user-service-0.0.1-SNAPSHOT.jar"]

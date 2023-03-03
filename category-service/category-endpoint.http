@@ -1,0 +1,19 @@
+GET localhost:8083/api/v1/categories
+###
+GET localhost:8083/api/v1/categories/1
+###
+POST localhost:8083/api/v1/categories
+Content-Type: application/json
+
+{
+  "name" : "category1"
+}
+###
+PUT localhost:8083/api/v1/categories/1
+Content-Type: application/json
+
+{
+  "name" : "category-update"
+}
+###
+DELETE localhost:8083/api/v1/categories/1

@@ -1,4 +1,4 @@
-APP_IMAGE_LIST ?= product-service-testing
+APP_IMAGE_LIST ?= user-service category-service
 
 start : down remove up
 

@@ -64,7 +64,7 @@ public class CategoryController {
         CategoryEntity updated_category = categoryService.update(category,id);
         ResponseDTO responseDTO = new ResponseDTO(
                 "success",
-                "products updated",
+                "products updated id:"+id,
                 updated_category
         );
         return ResponseEntity.ok(responseDTO);
@@ -75,7 +75,7 @@ public class CategoryController {
         categoryService.deleteById(id);
         ResponseDTO responseDTO = new ResponseDTO(
                 "success",
-                "products updated",
+                "products deleted",
                 null
         );
         return  ResponseEntity.ok(responseDTO);
