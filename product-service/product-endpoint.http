@@ -1,0 +1,27 @@
+GET localhost:8084/api/v1/products
+###
+GET localhost:8084/api/v1/products/1
+###
+POST localhost:8084/api/v1/products
+Content-Type: application/json
+
+{
+  "name" : "product",
+  "description" : "description",
+  "price" : 10000,
+  "stock" : 9,
+  "category_id" : 1
+}
+###
+PUT localhost:8084/api/v1/products/1
+Content-Type: application/json
+
+{
+  "name" : "product-updated",
+  "description" : "",
+  "price" : 10000,
+  "stock" : 9,
+  "category_id" : 1
+}
+###
+DELETE localhost:8084/api/v1/products/1

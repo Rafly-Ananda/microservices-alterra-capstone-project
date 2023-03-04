@@ -54,7 +54,7 @@ public class CategoryController {
         ResponseDTO responseDTO = new ResponseDTO(
                 "success",
                 "products created",
-                category
+                saved_category
         );
         return ResponseEntity.ok(responseDTO);
     }
