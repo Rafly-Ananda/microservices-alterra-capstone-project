@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   category-service:
     image: 'category-service:latest'
     container_name: category-service

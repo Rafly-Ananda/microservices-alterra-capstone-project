@@ -2,24 +2,27 @@ package com.alterra.userservice.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@DynamicUpdate
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
-    @Column
+    @Column(unique = true, nullable = false)
     private String username;
-    @Column
+    @Column(unique = true,  nullable = false)
     private String email;
-    @Column
+    @Column( nullable = false)
     private String password;
-    @Column
+    @Column( nullable = false)
     private String role;
 }

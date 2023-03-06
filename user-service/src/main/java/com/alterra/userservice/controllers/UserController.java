@@ -1,48 +1,55 @@
 package com.alterra.userservice.controllers;
 
+import com.alterra.userservice.dtos.GlobalResponse;
+import com.alterra.userservice.dtos.UserRequest;
+import com.alterra.userservice.dtos.UserResponse;
 import com.alterra.userservice.entities.UserEntity;
+import com.alterra.userservice.services.EncryptionService;
 import com.alterra.userservice.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final EncryptionService encryptionService;
+
+    @GetMapping("/health")
+    @ResponseStatus(HttpStatus.OK)
+    public String healthCheck() {
+        return "Working, Ready.";
+    }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserEntity createUser(@RequestBody UserEntity userEntity) {
-        return userService.createUser(userEntity);
+    public ResponseEntity<GlobalResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
+        return userService.createUser(userRequest);
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<UserEntity> getAllUser() {
+    public ResponseEntity<GlobalResponse>  getAllUser() {
         return userService.getAllUser();
     }
 
     @GetMapping("{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Optional<UserEntity> getSingleUser(@PathVariable Integer id) {
+    public ResponseEntity<GlobalResponse> getSingleUser(@PathVariable Integer id) {
         return userService.getSingleUser(id);
     }
 
-    @PutMapping("{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserEntity updateUser(@RequestBody UserEntity userEntity, @PathVariable Integer id) {
+    @PatchMapping("{id}")
+    public ResponseEntity<GlobalResponse> updateUser(@RequestBody UserEntity userEntity, @PathVariable Integer id) {
         return userService.updateUser(userEntity, id);
     }
 
     @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public String deleteUser(@PathVariable Integer id){
-        userService.deleteUser(id);
-        return "User deleted.";
+    public ResponseEntity<GlobalResponse> deleteUser(@PathVariable Integer id){
+        return userService.deleteUser(id);
     }
+
 }
