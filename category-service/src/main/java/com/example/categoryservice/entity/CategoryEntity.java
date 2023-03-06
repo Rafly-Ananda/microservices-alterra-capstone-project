@@ -1,6 +1,5 @@
 package com.example.categoryservice.entity;
 
-import com.example.productservice.entity.ProductEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +26,4 @@ public class CategoryEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @OneToOne(mappedBy = "product_category", cascade = CascadeType.ALL)
-    private ProductEntity product;
 }

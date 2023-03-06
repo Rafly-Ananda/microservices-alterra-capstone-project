@@ -1,6 +1,7 @@
 package com.example.productservice.controller;
 
 
+import com.example.productservice.dto.ProductWithCategoryDTO;
 import com.example.productservice.entity.ProductEntity;
 import com.example.productservice.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -16,12 +17,19 @@ import java.util.List;
 public class ProductController {
     private ProductService productService;
     @GetMapping
-    public List<ProductEntity> getAllProducts() {
-        List<ProductEntity> products = productService.getAllProducts();
+    public List<ProductEntity> getAll() {
+        List<ProductEntity> products = productService.getAll();
+
         return products;
     }
+    @GetMapping
+    public ProductWithCategoryDTO getById(Long product_id){
+        ProductWithCategoryDTO product = productService.getById(product_id);
+        return product;
+    }
+
     @PostMapping
-    public ResponseEntity<ProductEntity> createProduct(@RequestBody ProductEntity product) {
+    public ResponseEntity<ProductEntity> create(@RequestBody ProductEntity product) {
         ProductEntity createdProduct = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
