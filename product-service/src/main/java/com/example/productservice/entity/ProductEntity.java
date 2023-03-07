@@ -1,26 +1,35 @@
-package com.example.categoryservice.entity;
+package com.example.productservice.entity;
 
+import com.example.productservice.dto.GlobalResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
-@Table(name = "product_category")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryEntity {
+public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long p_category_id;
+    private Long product_id;
+
+    @Column(nullable = false)
+    //connect to category-service through productService
+    private Long category_id;
     @Column(nullable = false)
     private String name;
+    private String description;
+    @Column(nullable = false)
+    private Double price;
+    @Column(nullable = false)
+    private Integer stock;
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
