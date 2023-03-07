@@ -3,14 +3,14 @@ package com.alterra.userservice.repositories;
 import com.alterra.userservice.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
-//    @Query(value = "SELECT username, email, role FROM users WHERE users.id = ?1")
-//    Optional<UserEntity> findById(Integer id);
-//
-//    @Query( value = "SELECT * FROM users")
-//    List<UserEntity> findAllNative();
+    Optional<UserEntity> findByUsername(String username);
+    Optional<UserEntity> findByEmail(String email);
+
 }

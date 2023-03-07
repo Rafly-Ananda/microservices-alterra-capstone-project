@@ -1,9 +1,11 @@
 package com.example.productservice.controller;
 
 
+import com.example.productservice.dto.GlobalResponse;
 import com.example.productservice.dto.ProductWithCategoryDTO;
 import com.example.productservice.entity.ProductEntity;
 import com.example.productservice.service.ProductService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,20 +19,24 @@ import java.util.List;
 public class ProductController {
     private ProductService productService;
     @GetMapping
-    public List<ProductEntity> getAll() {
-        List<ProductEntity> products = productService.getAll();
-
-        return products;
+    public ResponseEntity<GlobalResponse> getAll() {
+        return productService.getAll();
     }
-    @GetMapping
-    public ProductWithCategoryDTO getById(Long product_id){
-        ProductWithCategoryDTO product = productService.getById(product_id);
-        return product;
+    @GetMapping("/{id}")
+    public ResponseEntity<GlobalResponse> getById(@PathVariable Long id){
+        return productService.getById(id);
     }
 
     @PostMapping
-    public ResponseEntity<ProductEntity> create(@RequestBody ProductEntity product) {
-        ProductEntity createdProduct = productService.createProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+    public ResponseEntity<GlobalResponse> create(@RequestBody ProductEntity product) {
+        return productService.create(product);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<GlobalResponse> update(@RequestBody ProductEntity product,@PathVariable Long id){
+        return productService.update(product,id);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GlobalResponse> delete(@PathVariable Long id){
+        return productService.delete(id);
     }
 }
