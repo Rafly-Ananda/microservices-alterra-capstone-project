@@ -1,0 +1,21 @@
+"orderEntity": {
+        "user_id": 1,
+        "status_id": {
+            "status_id": 1,
+            "order_status": "pending"
+        },
+        "total": 100.0
+    },
+    "orderDetailEntities": [
+        {
+            "product_id": 1,
+            "quantity": 2,
+            "sale_price": 50.0
+        },
+        {
+            "product_id": 2,
+            "quantity": 1,
+            "sale_price": 25.0
+        }
+    ]
+}

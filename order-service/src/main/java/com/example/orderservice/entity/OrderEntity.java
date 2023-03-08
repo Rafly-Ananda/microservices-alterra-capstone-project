@@ -19,11 +19,10 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long order_id;
     private Integer user_id;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
     @JoinColumn(name = "status_id", referencedColumnName = "status_id")
-    private StatusEntity status_id;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private StatusEntity status;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetailEntity> orderDetails;
     private Double total;
     @CreationTimestamp
@@ -32,8 +31,4 @@ public class OrderEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-
-
-
 }

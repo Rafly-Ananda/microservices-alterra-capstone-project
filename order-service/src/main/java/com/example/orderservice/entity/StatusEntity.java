@@ -14,10 +14,9 @@ public class StatusEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long status_id;
 
-    private Long order_id;
-
     private String order_status;
 
+    private Integer is_paid;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "status")
     private OrderEntity order;
 
