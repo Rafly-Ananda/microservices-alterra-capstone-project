@@ -8,6 +8,10 @@ import java.util.List;
 
 @Data
 public class CreateOrderRequestDTO {
-    private OrderEntity Order;
-    private List<OrderDetailEntity> orderDetail;
+    private OrderDTO Order;
+    private List<OrderDetailDTO> orderDetail;
 }
+
+
+
+

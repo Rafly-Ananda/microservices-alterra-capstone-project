@@ -14,10 +14,14 @@ public class StatusEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long status_id;
 
-    private String order_status;
 
     private Integer is_paid;
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "status")
+    @OneToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private OrderEntity order;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_state_id", referencedColumnName = "order_state_id")
+    private OrderStateEntity orderState;
 
 }

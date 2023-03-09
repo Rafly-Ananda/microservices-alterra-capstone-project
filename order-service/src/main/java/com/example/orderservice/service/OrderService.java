@@ -1,12 +1,17 @@
 package com.example.orderservice.service;
 
+import com.example.orderservice.dto.CreateOrderRequestDTO;
 import com.example.orderservice.dto.GlobalResponse;
+import com.example.orderservice.dto.OrderDetailDTO;
 import com.example.orderservice.entity.OrderDetailEntity;
+import com.example.orderservice.entity.OrderStateEntity;
 import com.example.orderservice.entity.OrderEntity;
 import com.example.orderservice.entity.StatusEntity;
 import com.example.orderservice.exception.OrderNotFoundException;
+import com.example.orderservice.exception.OrderStateNotFoundException;
 import com.example.orderservice.repository.OrderDetailRepository;
 import com.example.orderservice.repository.OrderRepository;
+import com.example.orderservice.repository.OrderStateRepository;
 import com.example.orderservice.repository.StatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +31,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final StatusRepository statusRepository;
+    private final OrderStateRepository orderStateRepository;
 
     public ResponseEntity<GlobalResponse> getAll() {
         List<OrderEntity> categories = orderRepository.findAll();
@@ -36,16 +43,16 @@ public class OrderService {
                 .data(categories)
                 .build(), HttpStatus.OK);
     }
-    public ResponseEntity<GlobalResponse> getAllByUserId(Long user_id) {
-        List<Object> orders = orderRepository.findByUser_Id(user_id);
-        log.info("Get all orders by user_id :"+orders);
-        return new ResponseEntity<>(GlobalResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("Orders Found.")
-                .status(200)
-                .data(orders)
-                .build(), HttpStatus.OK);
-    }
+//    public ResponseEntity<GlobalResponse> getAllByUserId(Long user_id) {
+//        List<Object> orders = orderRepository.findByUser_Id(user_id);
+//        log.info("Get all orders by user_id :"+orders);
+//        return new ResponseEntity<>(GlobalResponse.builder()
+//                .timestamp(LocalDateTime.now())
+//                .message("Orders Found.")
+//                .status(200)
+//                .data(orders)
+//                .build(), HttpStatus.OK);
+//    }
     public ResponseEntity<GlobalResponse> getById(Long id) {
         OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
         log.info("Get all orders by order_id :"+order);
@@ -56,33 +63,47 @@ public class OrderService {
                 .data(List.of(order))
                 .build(), HttpStatus.OK);
     }
-    public ResponseEntity<GlobalResponse> create(OrderEntity orderEntity, List<OrderDetailEntity> orderDetailEntities) {
+    public ResponseEntity<GlobalResponse> create(CreateOrderRequestDTO request) {
         // Kwitansi yang sudah dibuat tidak boleh diupdate pilihannya hapus atau manage statusnya
-        log.info("Set the order entity for each order detail :");
-        for (OrderDetailEntity orderDetailEntity : orderDetailEntities) {
-            log.info(String.valueOf(orderDetailEntity.getOrder_detail_id()));
-            orderDetailEntity.setOrder(orderEntity);
+
+        log.info("Save the order entity for each order detail :");
+        OrderEntity saved_orderEntity = new OrderEntity();
+        saved_orderEntity.setUser_id(request.getOrder().getUser_id());
+        log.info("Calculating the total price on order detail :");
+        Double total_price = 0.0;
+        for (OrderDetailDTO temp_orderDetailDTO : request.getOrderDetail()) {
+            total_price += temp_orderDetailDTO.getSale_price();
+        }
+        saved_orderEntity.setTotal(total_price);
+        orderRepository.save(saved_orderEntity);
+
+        log.info("Save the order entity for each order detail :");
+        for (OrderDetailDTO orderDetailDTO : request.getOrderDetail()) {
+            OrderDetailEntity saved_orderDetailEntity = new OrderDetailEntity();
+            saved_orderDetailEntity.setOrder(saved_orderEntity);
+            saved_orderDetailEntity.setProduct_id(orderDetailDTO.getProduct_id());
+            saved_orderDetailEntity.setQuantity(orderDetailDTO.getQuantity());
+            saved_orderDetailEntity.setSale_price(orderDetailDTO.getSale_price());
+            orderDetailRepository.save(saved_orderDetailEntity);
         }
 
-        log.info("Set the is_paid attribute of the status entity to 0 :");
-        StatusEntity statusEntity = orderEntity.getStatus();
+        // Create status entity
+        OrderStateEntity saved_orderStateEntity = new OrderStateEntity();
+
+        StatusEntity statusEntity = new StatusEntity();
+        statusEntity.setOrder(saved_orderEntity);
+        OrderStateEntity DefaultOrderState = orderStateRepository.findById(1).orElseThrow(() -> new OrderStateNotFoundException(1));
+
+        statusEntity.setOrderState(DefaultOrderState);
         statusEntity.setIs_paid(0);
+        statusRepository.save(statusEntity);
 
-        log.info("Save the order entity to get the generated order_id");
-        OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
-
-        log.info("Set the order_id attribute of each order detail entity to the generated order_id");
-        for (OrderDetailEntity orderDetailEntity : orderDetailEntities) {
-            orderDetailEntity.setOrder(savedOrderEntity);
-        }
-        // Save the order detail entities
-        orderDetailRepository.saveAll(orderDetailEntities);
 
         return new ResponseEntity<>(GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .message("Order Created.")
                 .status(200)
-                .data(List.of(savedOrderEntity, orderDetailEntities))
+                .data(List.of(request.getOrder(), request.getOrderDetail()))
                 .build(), HttpStatus.CREATED);
     }
 

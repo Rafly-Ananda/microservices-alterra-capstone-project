@@ -22,7 +22,6 @@ public class OrderDetailEntity {
     @JoinColumn(name = "order_id")
     @JsonIgnore
     private OrderEntity order;
-
     private Long product_id;
     private Integer quantity;
     private Double sale_price;

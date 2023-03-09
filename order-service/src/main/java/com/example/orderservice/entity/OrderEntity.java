@@ -19,8 +19,7 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long order_id;
     private Integer user_id;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "order", orphanRemoval = true)
-    @JoinColumn(name = "status_id", referencedColumnName = "status_id")
+    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
     private StatusEntity status;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetailEntity> orderDetails;
