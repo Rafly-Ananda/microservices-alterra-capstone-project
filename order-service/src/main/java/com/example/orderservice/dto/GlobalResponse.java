@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GlobalResponse {
+public class GlobalResponse<T> {
     private LocalDateTime timestamp;
     private String message;
     private Integer status;

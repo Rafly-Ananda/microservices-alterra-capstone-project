@@ -43,6 +43,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
         return new ResponseEntity<>(globalResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<GlobalResponse> handleProductStateNotFound(
+            OrderNotFoundException ex, WebRequest request) {
+
+        GlobalResponse globalResponse = GlobalResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message(ex.getMessage())
+                .status(404)
+                .data(null)
+                .build();
+        return new ResponseEntity<>(globalResponse, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(StockInsufficientException.class)
+    public ResponseEntity<GlobalResponse> handleStockInsufficientException(
+            OrderNotFoundException ex, WebRequest request) {
+
+        GlobalResponse globalResponse = GlobalResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message(ex.getMessage())
+                .status(500)
+                .data(null)
+                .build();
+        return new ResponseEntity<>(globalResponse, HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<GlobalResponse> handleUserNotFoundException(
             OrderNotFoundException ex, WebRequest request) {

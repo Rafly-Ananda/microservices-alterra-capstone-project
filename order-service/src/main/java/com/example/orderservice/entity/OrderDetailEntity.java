@@ -17,13 +17,17 @@ import java.time.LocalDateTime;
 public class OrderDetailEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="order_detail_id")
     private Long order_detail_id;
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonIgnore
     private OrderEntity order;
+    @Column(name="product_id")
     private Long product_id;
+    @Column(name="quantity")
     private Integer quantity;
+    @Column(name="sale_price")
     private Double sale_price;
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
