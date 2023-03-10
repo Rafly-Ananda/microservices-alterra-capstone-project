@@ -45,7 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<GlobalResponse> handleProductStateNotFound(
-            OrderNotFoundException ex, WebRequest request) {
+            ProductNotFoundException ex, WebRequest request) {
 
         GlobalResponse globalResponse = GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(StockInsufficientException.class)
     public ResponseEntity<GlobalResponse> handleStockInsufficientException(
-            OrderNotFoundException ex, WebRequest request) {
+            StockInsufficientException ex, WebRequest request) {
 
         GlobalResponse globalResponse = GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<GlobalResponse> handleUserNotFoundException(
-            OrderNotFoundException ex, WebRequest request) {
+            UserNotFoundException ex, WebRequest request) {
 
         GlobalResponse globalResponse = GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())

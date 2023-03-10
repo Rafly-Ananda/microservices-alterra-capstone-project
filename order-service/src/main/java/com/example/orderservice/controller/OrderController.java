@@ -35,9 +35,9 @@ public class OrderController {
     public ResponseEntity<GlobalResponse> updateOrder(@PathVariable Long id, @RequestBody ChangStateOrderDTO stateOrderDTO) {
         return orderService.updateStateOrder(id,stateOrderDTO.getOrder_state());
     }
-    @PutMapping("/cancel-state-order/{id}")
-    public ResponseEntity<GlobalResponse> cancelOrder(@PathVariable Long id) {
-        return orderService.cancelOrder(id);
+    @PutMapping("/cancel-state-order/{order_id}")
+    public ResponseEntity<GlobalResponse> cancelOrder(@PathVariable Long order_id) {
+        return orderService.cancelOrderByOrderId(order_id);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<GlobalResponse> deleteOrder(@PathVariable Long id) {

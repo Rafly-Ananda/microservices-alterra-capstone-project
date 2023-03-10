@@ -23,7 +23,7 @@ public class StatusEntity {
     private OrderEntity order;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
+//    @JsonIgnore
     @JoinColumn(name = "order_state_id", referencedColumnName = "order_state_id")
     private OrderStateEntity orderState;
 

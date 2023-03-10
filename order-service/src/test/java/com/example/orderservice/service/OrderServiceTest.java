@@ -1,30 +1,39 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.dto.GlobalResponse;
+import com.example.orderservice.dto.*;
+import com.example.orderservice.entity.OrderDetailEntity;
 import com.example.orderservice.entity.OrderEntity;
+import com.example.orderservice.repository.OrderDetailRepository;
 import com.example.orderservice.repository.OrderRepository;
+import com.example.orderservice.repository.StatusRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
-
+    @Mock
+    private OrderDetailRepository orderDetailRepository;
+    @Mock
+    private StatusRepository statusRepository;
     @InjectMocks
     private OrderService orderService;
 
@@ -58,4 +67,6 @@ public class OrderServiceTest {
         assertEquals(order1.getTotal(), ((List<OrderEntity>) globalResponse.getData()).get(0).getTotal());
         assertEquals(order2.getTotal(), ((List<OrderEntity>) globalResponse.getData()).get(1).getTotal());
     }
+
+
 }

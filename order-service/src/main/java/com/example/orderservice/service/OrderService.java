@@ -73,85 +73,127 @@ public class OrderService {
         * Kwitansi yang dibuat tidak dapat diupdate hanya bisa dibatalkan
         * */
 
-//        log.info("Check availabilty of each Product :");
-//        for (OrderDetailDTO temp_orderDetailDTO : request.getOrderDetail()) {
-//            Long orderedProductId = temp_orderDetailDTO.getProduct_id();
-//            Integer orderedProductQty = temp_orderDetailDTO.getQuantity();
-//            try{
-//                String categoryUrl = "http://product-service:8084/api/v1/products/" + orderedProductId;
-//                ResponseEntity<String> response = restTemplate.getForEntity(categoryUrl, String.class);
-//
-//                ObjectMapper mapper = new ObjectMapper();
-//                JsonNode root = mapper.readTree(response.getBody());
-//                Integer stockExisting = (root.path("data").path(0).path("stock").asInt());
-//                if(stockExisting < orderedProductQty){
-//                    throw new StockInsufficientException(orderedProductId);
-//                }
-//            }catch(Exception e){
-//                throw new ProductNotFoundException(orderedProductId);
-//            }
-//        }
+        log.info("Check availabilty of each Product :");
+        for (OrderDetailDTO temp_orderDetailDTO : request.getOrderDetail()) {
+            Long orderedProductId = temp_orderDetailDTO.getProduct_id();
+            Integer orderedProductQty = temp_orderDetailDTO.getQuantity();
+            log.info("http://product-service:8084/api/v1/products/" + orderedProductId);
 
-        log.info("Save the order entity for each order detail :");
+            String categoryUrl = "http://product-service:8084/api/v1/products/" + orderedProductId;
+            ResponseEntity<String> response = restTemplate.getForEntity(categoryUrl, String.class);
+            log.info(String.valueOf(response));
+            try{
+                String responseBody = response.getBody();
+                log.info("Response body: " + responseBody);
+                if(responseBody == null || responseBody.isEmpty()){
+                    throw new ProductNotFoundException(orderedProductId);
+                }
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(responseBody);
+                Integer stockExisting = root
+                        .path("data")
+                        .path(0)
+                        .path("product")
+                        .path("stock")
+                        .asInt();
+                log.info("Product id["+orderedProductId+"]"+"StockExisting: " + stockExisting);
+                log.info("Product id["+orderedProductId+"]"+"StockOrdered: " + orderedProductQty);
+                if(stockExisting < orderedProductQty){
+                    log.info("Order failed, Insufficient Stock");
+                    throw new StockInsufficientException(orderedProductId);
+                }
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
+        }
+        log.info("Check availabilty of each Product : SUCCESS");
+
+
+        log.info("Save the order entity :");
         OrderEntity saved_orderEntity = new OrderEntity();
-        saved_orderEntity.setUserId(request.getOrder().getUser_id());
-        log.info("Calculating the total price on order detail and adjust stock in inventory :");
+        /*
+         * make sure this data inputed in ORder Entity (saved_OrderEntity)
+         * user_id
+         * status_id (statusEntity)
+         * total
+         * */
         Double total_price = 0.0;
         for (OrderDetailDTO temp_orderDetailDTO : request.getOrderDetail()) {
-//            Long orderedProductId = temp_orderDetailDTO.getProduct_id();
-//            Integer orderedProductQty = temp_orderDetailDTO.getQuantity();
-//            log.info("Get Existing stock of Product ["+orderedProductId+"] ...");
-//            Integer stockExisting = 0;
-//            try{
-//                String categoryUrl = "http://product-service:8084/api/v1/products/" + orderedProductId;
-//                ResponseEntity<String> response = restTemplate.getForEntity(categoryUrl, String.class);
-//                ObjectMapper mapper = new ObjectMapper();
-//                JsonNode root = mapper.readTree(response.getBody());
-//                stockExisting += (root.path("data").path(0).path("stock").asInt());
-//                log.info("stockExisting of ["+orderedProductId+"] : "+stockExisting);
-//            }catch(Exception e){
-//                log.info("Fail Get Existing stock : "+orderedProductId);
-//                throw new RuntimeException(e);
-//            }
-//            log.info("Adjsuting Stock ...");
-//            Integer StockRemain = stockExisting - orderedProductQty;
-//            log.info("StockRemain of Product ["+orderedProductId+"] : "+StockRemain);
-//            try {
-//                String endpointUrl = "http://product-service:8084/api/v1/products/" + orderedProductId;
-//                Map<String, Integer> requestBody = new HashMap<>();
-//                requestBody.put("stock", StockRemain);
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.setContentType(MediaType.APPLICATION_JSON);
-//                HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(requestBody, headers);
-//                ResponseEntity<GlobalResponse> responseEntity = restTemplate.exchange(endpointUrl, HttpMethod.PUT, requestEntity, GlobalResponse.class);
-//                log.info("Adjusted stockRemain of Product ["+orderedProductId+"]");
-//            }catch (Exception e){
-//                throw new RuntimeException(e);
-//            }
-
-            log.info("Calculating total price ...");
-            Double subtotal = temp_orderDetailDTO.getSale_price()*temp_orderDetailDTO.getQuantity();
-            total_price += subtotal;
+            String productUrl = "http://product-service:8084/api/v1/products/" + temp_orderDetailDTO.getProduct_id();;
+            ResponseEntity<String> productDetailResponse = restTemplate.getForEntity(productUrl, String.class);
+            try{
+                String productDetailResponseBody = productDetailResponse.getBody();
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(productDetailResponseBody);
+                log.info("Calculating total price ...");
+                Double ProductPrice = root.path("data").path(0).path("product").path("price").asDouble();
+                Double subtotal = ProductPrice*temp_orderDetailDTO.getQuantity();
+                total_price += subtotal;
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
         }
         saved_orderEntity.setTotal(total_price);
+        saved_orderEntity.setUserId(request.getOrder().getUser_id());
         orderRepository.save(saved_orderEntity);
 
-        log.info("Save the order entity for each order detail :");
-        for (OrderDetailDTO orderDetailDTO : request.getOrderDetail()) {
-            OrderDetailEntity saved_orderDetailEntity = new OrderDetailEntity();
-            saved_orderDetailEntity.setOrder(saved_orderEntity);
-            saved_orderDetailEntity.setProduct_id(orderDetailDTO.getProduct_id());
-            saved_orderDetailEntity.setQuantity(orderDetailDTO.getQuantity());
-            saved_orderDetailEntity.setSale_price(orderDetailDTO.getSale_price());
-            orderDetailRepository.save(saved_orderDetailEntity);
+        log.info("Initialize input order details");
+        for (OrderDetailDTO temp_orderDetailDTO : request.getOrderDetail()) {
+            //variable used to update stock
+            Long orderedProductId = temp_orderDetailDTO.getProduct_id();
+            Integer orderedProductQty = temp_orderDetailDTO.getQuantity();
+
+            String productUrl = "http://product-service:8084/api/v1/products/" + orderedProductId;
+            ResponseEntity<String> productDetailResponse = restTemplate.getForEntity(productUrl, String.class);
+            log.info(String.valueOf(productDetailResponse));
+            log.info("http://product-service:8084/api/v1/products/" + orderedProductId);
+            try{
+                //for mapping product detail
+                String productDetailResponseBody = productDetailResponse.getBody();
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(productDetailResponseBody);
+                //varible for update
+                Long ProductCategoryId = root.path("data").path(0).path("categoryDTO").path("p_category_id").asLong();
+                String ProductName = root.path("data").path(0).path("product").path("name").asText();
+                String ProductDescription = root.path("data").path(0).path("product").path("description").asText();
+                Double ProductPrice = root.path("data").path(0).path("product").path("price").asDouble();
+                Integer ProductStock = root.path("data").path(0).path("product").path("stock").asInt();
+
+                ProductDTO updateProductRequestBody = new ProductDTO();
+                updateProductRequestBody.setCategory_id(ProductCategoryId);
+                updateProductRequestBody.setName(ProductName);
+                updateProductRequestBody.setDescription(ProductDescription);
+                updateProductRequestBody.setPrice(ProductPrice);
+                //cari selisih stock
+                Integer stockExisting = ProductStock;
+                Integer stockRemaining = stockExisting - orderedProductQty;
+                updateProductRequestBody.setStock(stockRemaining);
+
+                log.info("Adjusting product ["+orderedProductId+"]'s Stock: "+stockExisting+" >> "+stockRemaining);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
+                HttpEntity<ProductDTO> requestEntity = new HttpEntity<>(updateProductRequestBody, headers);
+                restTemplate.exchange(productUrl, HttpMethod.PUT, requestEntity, GlobalResponse.class);
+
+                log.info("Inputing Order Detail Product ["+orderedProductId+"]: ...");
+                OrderDetailEntity saved_orderDetailEntity = new OrderDetailEntity();
+                saved_orderDetailEntity.setOrder(saved_orderEntity);// input order_id
+                saved_orderDetailEntity.setProduct_id(orderedProductId);
+                saved_orderDetailEntity.setQuantity(temp_orderDetailDTO.getQuantity());
+                saved_orderDetailEntity.setSale_price(ProductPrice);
+                orderDetailRepository.save(saved_orderDetailEntity);
+
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
         }
+
 
         log.info("Create status entity based on saved order :");
         StatusEntity statusEntity = new StatusEntity();
         statusEntity.setOrder(saved_orderEntity);
         OrderStateEntity DefaultOrderState = orderStateRepository.findById(1).orElseThrow(() -> new OrderStateNotFoundException(1));
         statusEntity.setOrderState(DefaultOrderState);
-
         statusRepository.save(statusEntity);
 
 
@@ -188,19 +230,31 @@ public class OrderService {
                 .data(List.of(order))
                 .build(), HttpStatus.OK);
     }
-    public ResponseEntity<GlobalResponse> cancelOrder(Long id) {
-        OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException((id)));
-        StatusEntity statusEntity = new StatusEntity();
-        OrderStateEntity CancelOrderState = orderStateRepository.findById(5).orElseThrow(() -> new OrderStateNotFoundException(5));
-        statusEntity.setOrder(order);
-        statusEntity.setOrderState(CancelOrderState);
-        //find status
-        return new ResponseEntity<>(GlobalResponse.builder()
+    public ResponseEntity<GlobalResponse> cancelOrderByOrderId(Long orderId) {
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+//        Optional : if the order_state is processed (2) or more cant be canceled
+//        if (order.getStatus().getOrderState().getId() != 1) {
+//            throw new OrderCancellationNotAllowedException(orderId);
+//        }
+        StatusEntity statusEntity = order.getStatus();
+        if (statusEntity == null) {
+            statusEntity = new StatusEntity();
+            statusEntity.setOrder(order);
+        }
+
+        OrderStateEntity cancelOrderState = orderStateRepository.findById(5)
+                .orElseThrow(() -> new OrderStateNotFoundException(5));
+        statusEntity.setOrderState(cancelOrderState);
+
+        statusEntity = statusRepository.save(statusEntity);
+
+        return ResponseEntity.ok(GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .message("Order Id " + id + " Is Cancelled.")
+                .message("Order Id " + orderId + " Is Cancelled.")
                 .status(200)
                 .data(List.of(order))
-                .build(), HttpStatus.OK);
+                .build());
     }
 
 
