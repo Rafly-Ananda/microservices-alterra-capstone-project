@@ -41,12 +41,15 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
+      - redis
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/db
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
       - SERVER_PORT=8085
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
     ports:
       - "8085:8085"
   user-service:
@@ -77,6 +80,13 @@ services:
       - db:/var/lib/postgresql/data
     ports:
       - "5439:5432"
-
+  redis:
+    image: redis:6.2.4-alpine
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
 volumes:
   db:
+  redis:

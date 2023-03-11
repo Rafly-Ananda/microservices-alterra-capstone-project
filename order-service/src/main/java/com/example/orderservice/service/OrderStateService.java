@@ -7,6 +7,9 @@ import com.example.orderservice.entity.StatusEntity;
 import com.example.orderservice.repository.OrderStateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,21 +21,18 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@EnableCaching
 public class OrderStateService {
     private final OrderStateRepository orderStateRepository;
-
-    public ResponseEntity<GlobalResponse> getAll() {
+    @Cacheable(value="orderState")
+    public List<OrderStateEntity> getAll() {
+        log.info("Get all order-states from DB :");
         List<OrderStateEntity> orderState = orderStateRepository.findAll();
         log.info("Get all order-states :");
-        return new ResponseEntity<>(GlobalResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("Order-state :")
-                .status(200)
-                .data(orderState)
-                .build(), HttpStatus.OK);
+        return orderState;
     }
-
-    public ResponseEntity<GlobalResponse> seedOrderState(){
+    @CacheEvict(cacheNames = "orderState", allEntries = true)
+    public List<OrderStateEntity> seedOrderState(){
         /*
         *   1 WAITING_PAYMENT (DEFAULT)
             2 PROCESSED
@@ -57,12 +57,7 @@ public class OrderStateService {
                 saved_state.setOrder_state_name(saved_seed.getOrder_state_name());
                 orderStateRepository.save(saved_state);
             }
-            return new ResponseEntity<>(GlobalResponse.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message("seed Order-state success.")
-                    .status(200)
-                    .data(seed)
-                    .build(), HttpStatus.OK);
+            return seed;
         }
     }
 }

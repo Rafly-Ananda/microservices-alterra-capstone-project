@@ -3,11 +3,16 @@ package com.example.orderservice.controller;
 import com.example.orderservice.dto.ChangStateOrderDTO;
 import com.example.orderservice.dto.CreateOrderRequestDTO;
 import com.example.orderservice.dto.GlobalResponse;
+import com.example.orderservice.entity.OrderStateEntity;
 import com.example.orderservice.service.OrderService;
 import com.example.orderservice.service.OrderStateService;
+//import jakarta.persistence.Cacheable;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -46,11 +51,11 @@ public class OrderController {
 
 
     @GetMapping("/orderstates")
-    public ResponseEntity<GlobalResponse> getOrderState(){
+    public List<OrderStateEntity> getOrderState(){
         return orderStateService.getAll();
     }
     @PostMapping("/seed-orderstates")
-    public ResponseEntity<GlobalResponse> seedOrderState(){
+    public List<OrderStateEntity> seedOrderState(){
         return orderStateService.seedOrderState();
     }
 

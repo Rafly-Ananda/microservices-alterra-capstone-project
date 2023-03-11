@@ -67,6 +67,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
         return new ResponseEntity<>(globalResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(OrderCancellationNotAllowedException.class)
+    public ResponseEntity<GlobalResponse> handleOrderCancellationNotAllowedException(
+            OrderCancellationNotAllowedException ex, WebRequest request) {
+
+        GlobalResponse globalResponse = GlobalResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message(ex.getMessage())
+                .status(500)
+                .data(null)
+                .build();
+        return new ResponseEntity<>(globalResponse, HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<GlobalResponse> handleUserNotFoundException(
             UserNotFoundException ex, WebRequest request) {

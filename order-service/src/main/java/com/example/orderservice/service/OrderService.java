@@ -234,20 +234,16 @@ public class OrderService {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
 //        Optional : if the order_state is processed (2) or more cant be canceled
-//        if (order.getStatus().getOrderState().getId() != 1) {
-//            throw new OrderCancellationNotAllowedException(orderId);
-//        }
-        StatusEntity statusEntity = order.getStatus();
-        if (statusEntity == null) {
-            statusEntity = new StatusEntity();
-            statusEntity.setOrder(order);
+        if (order.getStatus().getOrderState().getOrder_state_id() != 1) {
+            throw new OrderCancellationNotAllowedException(orderId);
         }
+        StatusEntity statusEntity = order.getStatus();
 
         OrderStateEntity cancelOrderState = orderStateRepository.findById(5)
                 .orElseThrow(() -> new OrderStateNotFoundException(5));
         statusEntity.setOrderState(cancelOrderState);
 
-        statusEntity = statusRepository.save(statusEntity);
+        statusRepository.save(statusEntity);
 
         return ResponseEntity.ok(GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
