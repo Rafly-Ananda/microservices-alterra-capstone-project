@@ -30,6 +30,8 @@ public class ProductEntity {
     private Double price;
     @Column(nullable = false)
     private Integer stock;
+    @Column(nullable = false)
+    private String[] images;
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createAt;

@@ -32,6 +32,7 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
     private final RestTemplate restTemplate;
+
     public ResponseEntity<GlobalResponse> getAll() {
         List<ProductEntity> products = productRepository.findAll();
         log.info("Get all product");
@@ -79,6 +80,7 @@ public class ProductService {
             throw new ProductNotFoundException(id);
         }
     }
+
     public ResponseEntity<GlobalResponse> create(ProductEntity product) {
         productRepository.save(product);
 
@@ -89,6 +91,7 @@ public class ProductService {
                 .data(List.of(product))
                 .build(), HttpStatus.CREATED);
     }
+
     public ResponseEntity<GlobalResponse> update(ProductEntity productEntity, Long id) {
         ProductEntity product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
 
@@ -97,7 +100,8 @@ public class ProductService {
         try{
             log.info("calling : http://category-service:8083/api/v1/categories/" + productEntity.getCategory_id());
 
-            String categoryUrl = "http://category-service:8083/api/v1/categories/" + productEntity.getCategory_id();
+            // Change later
+            String categoryUrl = "http://localhost:8083/api/v1/categories/" + productEntity.getCategory_id();
             ResponseEntity<String> response = restTemplate.getForEntity(categoryUrl, String.class);
 
             if(response.getStatusCode() == HttpStatus.OK){
@@ -127,6 +131,7 @@ public class ProductService {
             throw new CategoryNotFoundException(productEntity.getCategory_id());
         }
     }
+
     public ResponseEntity<GlobalResponse> delete(Long id) {
         ProductEntity product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException((id)));
         productRepository.deleteById(id);
@@ -137,7 +142,5 @@ public class ProductService {
                 .data(List.of(product))
                 .build(), HttpStatus.OK);
     }
-
-
 
 }
