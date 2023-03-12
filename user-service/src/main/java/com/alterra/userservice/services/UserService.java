@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import java.util.Map;
 public class UserService {
     private final UserRepository userRepository;
     private final EncryptionService encryptionService;
+
 
     public ResponseEntity<GlobalResponse> createUser(UserRequest userRequest) {
         String encryptedPass = encryptionService.passwordEncryptor(userRequest.getPassword());
