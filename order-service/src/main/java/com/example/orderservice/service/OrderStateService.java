@@ -33,13 +33,6 @@ public class OrderStateService {
     }
     @CacheEvict(cacheNames = "orderState", allEntries = true)
     public List<OrderStateEntity> seedOrderState(){
-        /*
-        *   1 WAITING_PAYMENT (DEFAULT)
-            2 PROCESSED
-            3 ON_DELIVERY
-            4 DELIVERED
-            5 CANCELLED
-        * */
         List<OrderStateEntity> cekOrderState = orderStateRepository.findAll();
         if(!cekOrderState.isEmpty()){
             throw new RuntimeException("Can't seed the order-state. Order state is already exist");

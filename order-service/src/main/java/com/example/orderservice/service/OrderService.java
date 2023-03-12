@@ -34,6 +34,7 @@ public class OrderService {
     private final StatusRepository statusRepository;
     private final OrderStateRepository orderStateRepository;
 
+    private final OrderStateService orderStateService;
     public ResponseEntity<GlobalResponse> getAll() {
         List<OrderEntity> categories = orderRepository.findAll();
         log.info("Get all orders :");
@@ -45,7 +46,7 @@ public class OrderService {
                 .build(), HttpStatus.OK);
     }
     public ResponseEntity<GlobalResponse> getAllByUserId(Integer user_id) {
-        List<?> order_byuser = orderRepository.findByUserId(user_id);
+        List<OrderEntity> order_byuser = orderRepository.findByUserId(user_id);
         if(order_byuser.isEmpty()){
             throw new UserNotFoundException(user_id);
         }else{
@@ -69,9 +70,11 @@ public class OrderService {
                 .build(), HttpStatus.OK);
     }
     public ResponseEntity<GlobalResponse> create(CreateOrderRequestDTO request) {
-        /*
-        * Kwitansi yang dibuat tidak dapat diupdate hanya bisa dibatalkan
-        * */
+        List<OrderStateEntity> orderState = orderStateRepository.findAll();
+
+        if (orderState.isEmpty()) {
+            orderStateService.seedOrderState();
+        }
 
         log.info("Check availabilty of each Product :");
         for (OrderDetailDTO temp_orderDetailDTO : request.getOrderDetail()) {
@@ -106,17 +109,9 @@ public class OrderService {
                 throw new RuntimeException(e);
             }
         }
-        log.info("Check availabilty of each Product : SUCCESS");
-
 
         log.info("Save the order entity :");
         OrderEntity saved_orderEntity = new OrderEntity();
-        /*
-         * make sure this data inputed in ORder Entity (saved_OrderEntity)
-         * user_id
-         * status_id (statusEntity)
-         * total
-         * */
         Double total_price = 0.0;
         for (OrderDetailDTO temp_orderDetailDTO : request.getOrderDetail()) {
             String productUrl = "http://product-service:8084/api/v1/products/" + temp_orderDetailDTO.getProduct_id();;
@@ -182,12 +177,10 @@ public class OrderService {
                 saved_orderDetailEntity.setQuantity(temp_orderDetailDTO.getQuantity());
                 saved_orderDetailEntity.setSale_price(ProductPrice);
                 orderDetailRepository.save(saved_orderDetailEntity);
-
             }catch(Exception e){
                 throw new RuntimeException(e);
             }
         }
-
 
         log.info("Create status entity based on saved order :");
         StatusEntity statusEntity = new StatusEntity();
@@ -195,7 +188,6 @@ public class OrderService {
         OrderStateEntity DefaultOrderState = orderStateRepository.findById(1).orElseThrow(() -> new OrderStateNotFoundException(1));
         statusEntity.setOrderState(DefaultOrderState);
         statusRepository.save(statusEntity);
-
 
         return new ResponseEntity<>(GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -205,7 +197,7 @@ public class OrderService {
                 .build(), HttpStatus.CREATED);
     }
 
-    //Kwintansi kayanya di flag aja kalo gagal atau apa
+    //[Testing purpose only] Kwintansi kayanya di flag aja kalo gagal atau apa
     public ResponseEntity<GlobalResponse> delete(Long id) {
         OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException((id)));
         orderRepository.deleteById(id);
@@ -218,10 +210,10 @@ public class OrderService {
     }
     public ResponseEntity<GlobalResponse> updateStateOrder(Long id,Integer state) {
         OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException((id)));
-        StatusEntity statusEntity = new StatusEntity();
-        OrderStateEntity CancelOrderState = orderStateRepository.findById(state).orElseThrow(() -> new OrderStateNotFoundException(state));
-        statusEntity.setOrder(order);
-        statusEntity.setOrderState(CancelOrderState);
+        StatusEntity statusEntity = order.getStatus();
+        OrderStateEntity updateOrderState = orderStateRepository.findById(state).orElseThrow(() -> new OrderStateNotFoundException(state));
+        statusEntity.setOrderState(updateOrderState);
+        statusRepository.save(statusEntity);
         //find status
         return new ResponseEntity<>(GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -233,7 +225,9 @@ public class OrderService {
     public ResponseEntity<GlobalResponse> cancelOrderByOrderId(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
-//        Optional : if the order_state is processed (2) or more cant be canceled
+        /*
+        * Optional : if the order_state is processed (2) or more cant be canceled
+        * */
         if (order.getStatus().getOrderState().getOrder_state_id() != 1) {
             throw new OrderCancellationNotAllowedException(orderId);
         }
