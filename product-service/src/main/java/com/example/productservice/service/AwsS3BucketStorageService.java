@@ -55,22 +55,16 @@ public class AwsS3BucketStorageService {
     }
 
     @Async
-    public ResponseEntity<GlobalResponse> generateFileUrl(String fileName, HttpMethod httpMethod) {
+    public String generateFileUrl(String fileName, HttpMethod httpMethod) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE, 1);
-        String presignedUrl =  AwsS3Client.generatePresignedUrl(s3BucketName, fileName, calendar.getTime(), httpMethod).toString();
-        return new ResponseEntity<>(GlobalResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("Files uploaded to bucket " + s3BucketName)
-                .status(200)
-                .data(List.of(presignedUrl))
-                .build(), HttpStatus.OK);
-
+        return AwsS3Client.generatePresignedUrl(s3BucketName, fileName, calendar.getTime(), httpMethod).toString();
     }
 
-    public ResponseEntity<GlobalResponse> uploadFile(List<MultipartFile> files ) throws AmazonClientException, IOException {
+    public List<String> uploadFile(List<MultipartFile> files ) throws AmazonClientException, IOException {
         List<String> uploadedFiles = new ArrayList<>();
+
         for(MultipartFile file: files) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
@@ -81,30 +75,17 @@ public class AwsS3BucketStorageService {
         }
 
         log.info("Files uploaded to bucket({})", s3BucketName);
-        return new ResponseEntity<>(GlobalResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("Files uploaded to bucket " + s3BucketName)
-                .status(200)
-                .data(uploadedFiles)
-                .build(), HttpStatus.OK);
+        return uploadedFiles;
     }
 
-    public ResponseEntity<GlobalResponse> deleteFile(String filename) {
+    public String deleteFile(String filename) {
 
         if (AwsS3Client.doesObjectExist(s3BucketName, filename)){
             AwsS3Client.deleteObject(s3BucketName,filename);
             log.info("File deleted from bucket({}): {}", s3BucketName, filename);
-            return new ResponseEntity<>(GlobalResponse.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message("File " + filename + " successfully deleted.")
-                    .status(200)
-                    .build(), HttpStatus.OK);
+            return "File " + filename + " successfully deleted.";
         } else {
-            return new ResponseEntity<>(GlobalResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("File " + filename + " does not exist, aborting deletion.")
-                .status(200)
-                .build(), HttpStatus.OK);
+            return "File " + filename + " does not exist, aborting deletion.";
         }
     }
 }
