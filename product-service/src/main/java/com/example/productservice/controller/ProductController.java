@@ -2,41 +2,107 @@ package com.example.productservice.controller;
 
 
 import com.example.productservice.dto.GlobalResponse;
+import com.example.productservice.dto.ProductRequestDTO;
 import com.example.productservice.dto.ProductWithCategoryDTO;
 import com.example.productservice.entity.ProductEntity;
+import com.example.productservice.service.AwsS3BucketStorageService;
 import com.example.productservice.service.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import netscape.javascript.JSObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/products")
 @AllArgsConstructor
+@CrossOrigin(origins = "*")
 public class ProductController {
     private ProductService productService;
+    private AwsS3BucketStorageService awsS3BucketStorageService;
+
     @GetMapping
-    public ResponseEntity<GlobalResponse> getAll() {
-        return productService.getAll();
+    public ResponseEntity<GlobalResponse<ProductEntity>> getAll() {
+        List<ProductEntity> productsList = productService.getAll();
+        return new ResponseEntity<>(GlobalResponse.<ProductEntity>builder()
+                .timestamp(LocalDateTime.now())
+                .message("Products found.")
+                .status(200)
+                .data(productsList)
+                .build(), HttpStatus.OK);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<GlobalResponse> getById(@PathVariable Long id){
-        return productService.getById(id);
+    public ResponseEntity<GlobalResponse<ProductWithCategoryDTO>> getById(@PathVariable Long id){
+        List<ProductWithCategoryDTO> productsList =  productService.getById(id);
+        return new ResponseEntity<>(GlobalResponse.<ProductWithCategoryDTO>builder()
+                .timestamp(LocalDateTime.now())
+                .message("Product found.")
+                .status(200)
+                .data(productsList)
+                .build(), HttpStatus.OK);
+
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse> create(@RequestBody ProductEntity product) {
-        return productService.create(product);
+    @SneakyThrows
+    public ResponseEntity<GlobalResponse<ProductEntity>> create(@RequestPart("product") String product,
+                                    @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+        List<String> s3Keys = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        if (images != null) {
+            System.out.println("saving");
+            List<String> uploadResponse = awsS3BucketStorageService.uploadFile(images);
+            s3Keys.addAll(uploadResponse);
+        }
+
+        ProductRequestDTO newProductRequest = objectMapper.readValue(product, ProductRequestDTO.class);
+        newProductRequest.setImages(s3Keys);
+
+        ProductEntity savedProduct = productService.create(newProductRequest);
+
+        return new ResponseEntity<>(GlobalResponse.<ProductEntity>builder()
+                .timestamp(LocalDateTime.now())
+                .message("Product Created.")
+                .status(200)
+                .data(List.of(savedProduct))
+                .build(), HttpStatus.CREATED);
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<GlobalResponse> update(@RequestBody ProductEntity product,@PathVariable Long id){
-        return productService.update(product,id);
+    public ResponseEntity<GlobalResponse<ProductEntity>> update(@RequestBody ProductEntity product,@PathVariable Long id){
+        ProductEntity updatedProduct = productService.update(product,id);
+        return new ResponseEntity<>(GlobalResponse.<ProductEntity>builder()
+                .timestamp(LocalDateTime.now())
+                .message("Product " + id + " Updated.")
+                .status(HttpStatus.OK.value())
+                .data(List.of(updatedProduct))
+                .build(), HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<GlobalResponse> delete(@PathVariable Long id){
-        return productService.delete(id);
+    public ResponseEntity<GlobalResponse<ProductEntity>> delete(@PathVariable Long id){
+        ProductEntity deletedProduct = productService.delete(id);
+        return new ResponseEntity<>(GlobalResponse.<ProductEntity>builder()
+                .timestamp(LocalDateTime.now())
+                .message("Product Id " + id + " Is Deleted.")
+                .status(200)
+                .data(List.of(deletedProduct))
+                .build(), HttpStatus.OK);
     }
 }
