@@ -156,6 +156,7 @@ public class OrderService {
 
                 ProductDTO updateProductRequestBody = new ProductDTO();
                 updateProductRequestBody.setCategory_id(ProductCategoryId);
+                log.info(String.valueOf(ProductCategoryId));
                 updateProductRequestBody.setName(ProductName);
                 updateProductRequestBody.setDescription(ProductDescription);
                 updateProductRequestBody.setPrice(ProductPrice);
