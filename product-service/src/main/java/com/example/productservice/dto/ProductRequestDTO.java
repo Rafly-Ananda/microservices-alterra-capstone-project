@@ -5,16 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GlobalResponse<T> {
-    private LocalDateTime timestamp;
-    private String message;
-    private Integer status;
-    private List<T> data;
+public class ProductRequestDTO {
+    private Long category_id;
+    private String name;
+    private String description;
+    private Double price;
+    private Integer stock;
+    private List<String> images;
 }
