@@ -33,8 +33,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final RestTemplate restTemplate;
 
-    private final String categoryServiceUrl = "http://localhost:8083/api/v1/categories/";
-    private final String categoryServiceUrlDocker = "http://category-service:8083/api/v1/categories";
+//    private final String categoryServiceUrl = "http://localhost:8083/api/v1/categories/";
+    private final String categoryServiceUrl = "http://category-service:8083/api/v1/categories/";
 
     public List<ProductEntity> getAll() {
         List<ProductEntity> products = productRepository.findAll();
@@ -59,7 +59,7 @@ public class ProductService {
                     ObjectMapper mapper = new ObjectMapper();
                     mapper.findAndRegisterModules();
                     GlobalResponse<Category> categoryResponse = mapper.readValue(response.getBody(), new TypeReference<GlobalResponse<Category>>() {});
-                    categoryDTO.setCategory_id(categoryResponse.getData().get(0).getCategory_id());
+                    categoryDTO.setP_category_id(categoryResponse.getData().get(0).getP_category_id());
                     categoryDTO.setName(categoryResponse.getData().get(0).getName());
                     categoryDTO.setCreateAt(categoryResponse.getData().get(0).getCreateAt());
                     categoryDTO.setUpdatedAt(categoryResponse.getData().get(0).getUpdatedAt());
@@ -71,7 +71,7 @@ public class ProductService {
 
             ProductWithCategoryDTO productWithCategoryDTO = new ProductWithCategoryDTO();
             productWithCategoryDTO.setProduct(product.get());
-            productWithCategoryDTO.setCategoryDTO(categoryDTO);
+            productWithCategoryDTO.setCategory(categoryDTO);
 
             List<ProductWithCategoryDTO> productList = new ArrayList<>();
             productList.add(productWithCategoryDTO);
@@ -112,7 +112,7 @@ public class ProductService {
                 mapper.findAndRegisterModules();
                 GlobalResponse<Category> categoryResponse = mapper.readValue(response.getBody(), new TypeReference<GlobalResponse<Category>>() {});
                 Category categoryDTO = new Category();
-                categoryDTO.setCategory_id(categoryResponse.getData().get(0).getCategory_id());
+                categoryDTO.setP_category_id(categoryResponse.getData().get(0).getP_category_id());
                 categoryDTO.setName(categoryResponse.getData().get(0).getName());
                 categoryDTO.setCreateAt(categoryResponse.getData().get(0).getCreateAt());
                 categoryDTO.setUpdatedAt(categoryResponse.getData().get(0).getUpdatedAt());

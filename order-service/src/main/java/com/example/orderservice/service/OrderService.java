@@ -60,7 +60,7 @@ public class OrderService {
         }
     }
     public ResponseEntity<GlobalResponse> getById(Long id) {
-        OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        Optional<OrderEntity> order = orderRepository.findById(id);
         log.info("Get all orders by order_id :"+order);
         return new ResponseEntity<>(GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
@@ -148,7 +148,7 @@ public class OrderService {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode root = mapper.readTree(productDetailResponseBody);
                 //varible for update
-                Long ProductCategoryId = root.path("data").path(0).path("categoryDTO").path("p_category_id").asLong();
+                Long ProductCategoryId = root.path("data").path(0).path("category").path("p_category_id").asLong();
                 String ProductName = root.path("data").path(0).path("product").path("name").asText();
                 String ProductDescription = root.path("data").path(0).path("product").path("description").asText();
                 Double ProductPrice = root.path("data").path(0).path("product").path("price").asDouble();

@@ -1,4 +1,4 @@
-APP_IMAGE_LIST ?= user-service category-service product-service
+APP_IMAGE_LIST ?= user-service category-service product-service auth-service gateaway-service
 
 start : down remove up
 

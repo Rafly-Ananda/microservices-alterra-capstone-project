@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class ProductWithCategoryDTO {
     ProductEntity product;
-    Category categoryDTO;
+    Category category;
 }
