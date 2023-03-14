@@ -1,10 +1,12 @@
 package com.example.orderservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,11 +25,10 @@ public class OrderEntity {
     private Long order_id;
     @Column(name="user_id")
     private Integer userId;
-    @OneToOne(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL,  orphanRemoval = true)
-//    @JsonIgnore
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private StatusEntity status;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnore
+    @ToString.Exclude
     private List<OrderDetailEntity> orderDetails;
     @Column(name="total")
     private Double total;

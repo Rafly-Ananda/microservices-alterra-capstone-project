@@ -1,6 +1,8 @@
 package com.example.orderservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +21,7 @@ public class OrderDetailEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="order_detail_id")
     private Long order_detail_id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     @JsonIgnore
     private OrderEntity order;
@@ -35,4 +37,5 @@ public class OrderDetailEntity {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
 }

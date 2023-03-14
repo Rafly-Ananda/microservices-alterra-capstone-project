@@ -10,6 +10,4 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     List<OrderEntity> findByUserId(Integer userId);
-
-    OrderEntity findByOrderId(Long id);
 }
