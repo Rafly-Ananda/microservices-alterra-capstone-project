@@ -1,6 +1,5 @@
 package com.beyonder.authservice.config;
 
-import com.beyonder.authservice.service.impl.JpaUserDetailService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -34,7 +33,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final RSAKeyProperties rsaKeyProperties;
-    private final JpaUserDetailService jpaUserDetailService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http
@@ -56,15 +54,15 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
-
-        var authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return new ProviderManager(authProvider);
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
+//
+//        var authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService);
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//
+//        return new ProviderManager(authProvider);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

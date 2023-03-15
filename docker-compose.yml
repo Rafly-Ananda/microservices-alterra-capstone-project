@@ -23,7 +23,7 @@ services:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://user-db:5432/user_db
         - SPRING_DATASOURCE_USERNAME=user_db
         - SPRING_DATASOURCE_PASSWORD=user_db
-        - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+        - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
         - SERVER_PORT=8086
       expose:
         - "8086"

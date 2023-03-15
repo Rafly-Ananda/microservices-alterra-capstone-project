@@ -37,7 +37,6 @@ public class UserService {
                 .email(userRequest.getEmail())
                 .password(encryptedPass)
                 .role(userRequest.getRole())
-                .user_id(null)
                 .build();
 
         if(userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
@@ -139,7 +138,7 @@ public class UserService {
             return new ResponseEntity<>(GlobalResponse.builder()
                     .timestamp(LocalDateTime.now())
                     .message("Username not found ")
-                    .status(404)
+                    .status(HttpStatus.NOT_FOUND.value())
                     .data(Collections.singletonList(userRepository.findByUsername(loginUserRequest.getUsername())))
                     .build(), HttpStatus.NOT_FOUND);
         }else{
@@ -147,22 +146,22 @@ public class UserService {
             //match both plain
             String plainPassRequest = loginUserRequest.getPassword();
             String decryptedPassDB = encryptionService.passwordDecoder(userData.get().getPassword());
-            log.info(plainPassRequest+" == "+ decryptedPassDB);
+
             if (plainPassRequest.equals(decryptedPassDB)) {
                 // Passwords match, combination is valid
                 return new ResponseEntity<>(GlobalResponse.builder()
                         .timestamp(LocalDateTime.now())
                         .message("Username and Password valid")
-                        .status(200)
-                        .data(new ArrayList<>())
+                        .status(HttpStatus.OK.value())
+                        .data(Collections.singletonList(userRepository.findByUsername(loginUserRequest.getUsername())))
                         .build(), HttpStatus.OK);
             } else {
                 // Passwords do not match, combination is invalid
                 return new ResponseEntity<>(GlobalResponse.builder()
                         .timestamp(LocalDateTime.now())
                         .message("Username or Password incorrect")
-                        .status(403)
-                        .data(Collections.singletonList(userRepository.findByUsername(loginUserRequest.getUsername())))
+                        .status(HttpStatus.UNAUTHORIZED.value())
+                        .data(Collections.singletonList("Invalid credentials"))
                         .build(), HttpStatus.UNAUTHORIZED);
             }
         }

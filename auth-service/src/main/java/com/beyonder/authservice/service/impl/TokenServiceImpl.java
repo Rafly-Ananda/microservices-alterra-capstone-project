@@ -4,18 +4,13 @@ import com.beyonder.authservice.dto.CreateUserRequestDTO;
 import com.beyonder.authservice.dto.GlobalResponse;
 import com.beyonder.authservice.dto.LoginUserRequestDTO;
 import com.beyonder.authservice.exception.InvalidPasswordException;
-import com.beyonder.authservice.exception.RegistrationFailedException;
-import com.beyonder.authservice.repository.UserRepository;
 import com.beyonder.authservice.service.TokenService;
 import com.beyonder.authservice.util.PasswordValidator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.*;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +63,7 @@ public class TokenServiceImpl implements TokenService {
                     .status(userDetailResponse.getBody().getStatus())
                     .data(userDetailResponse.getBody().getData())
                     .build(), HttpStatus.CREATED);
-        }catch(HttpClientErrorException e){
+        } catch (HttpClientErrorException e) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(e.getResponseBodyAsString());
@@ -83,7 +78,7 @@ public class TokenServiceImpl implements TokenService {
                 throw new RuntimeException("Error parsing response body");
             }
         } catch (Exception e) {
-            log.error("Unexpected error while get detail user ("+userFindByUsernameUrl+") :", e);
+            log.error("Unexpected error while get detail user (" + userFindByUsernameUrl + ") :", e);
             return new ResponseEntity<>(GlobalResponse.builder()
                     .timestamp(LocalDateTime.now())
                     .message("Unexpected error while get detail user")
@@ -95,11 +90,11 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     @Transactional()
-    public ResponseEntity<GlobalResponse> registerUser(CreateUserRequestDTO userRequest){
+    public ResponseEntity<GlobalResponse> registerUser(CreateUserRequestDTO userRequest) {
         if (!PasswordValidator.isValid(userRequest.getPassword())) {
             throw new InvalidPasswordException("Password Invalid : password must be Alphanumeric");
         }
-        try{
+        try {
             ResponseEntity<GlobalResponse> response = null;
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -113,9 +108,9 @@ public class TokenServiceImpl implements TokenService {
                     .data(new ArrayList<>())
                     .build(), HttpStatus.CREATED);
 
-        }catch(HttpClientErrorException ex){
-            log.info("HttpException while Rest Template to user-service "+ ex);
-            try{
+        } catch (HttpClientErrorException ex) {
+            log.info("HttpException while Rest Template to user-service " + ex);
+            try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(ex.getResponseBodyAsString());
                 String message = jsonNode.get("message").asText();
@@ -126,7 +121,7 @@ public class TokenServiceImpl implements TokenService {
                         .status(ex.getStatusCode().value())
                         .data(new ArrayList<>())
                         .build(), ex.getStatusCode());
-            }catch(Exception e){
+            } catch (Exception e) {
                 log.info(String.valueOf(ex));
                 return new ResponseEntity<>(GlobalResponse.builder()
                         .timestamp(LocalDateTime.now())
@@ -137,22 +132,23 @@ public class TokenServiceImpl implements TokenService {
             }
         }
 
+
     }
 
     @Override
     public ResponseEntity<GlobalResponse> loginUser(LoginUserRequestDTO loginUserRequestDTO) {
-        try{
+        try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<LoginUserRequestDTO> requestEntity = new HttpEntity<>(loginUserRequestDTO, headers);
-            ResponseEntity<GlobalResponse> response = restTemplate.exchange(UserServiceUrl+"/verify", HttpMethod.POST, requestEntity, GlobalResponse.class);
+            ResponseEntity<GlobalResponse> response = restTemplate.exchange(UserServiceUrl + "/verify", HttpMethod.POST, requestEntity, GlobalResponse.class);
 
             String token = generatedToken(loginUserRequestDTO.getUsername());
 
             log.info("Authentication successful" + response);
             Jwt jwtToken = jwtDecoder.decode(token);
             String data = jwtToken.getSubject();
-            log.info("login as "+data);
+            log.info("login as " + data);
 
             return new ResponseEntity<>(GlobalResponse.builder()
                     .timestamp(LocalDateTime.now())
@@ -161,9 +157,9 @@ public class TokenServiceImpl implements TokenService {
                     .data(Collections.singletonList(token))
                     .build(), response.getStatusCode());
 
-        }catch (HttpClientErrorException ex){
-            log.info("HttpException while Rest Template to user-service "+ ex);
-            try{
+        } catch (HttpClientErrorException ex) {
+            log.info("HttpException while Rest Template to user-service " + ex);
+            try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(ex.getResponseBodyAsString());
                 String message = jsonNode.get("message").asText();
@@ -174,14 +170,23 @@ public class TokenServiceImpl implements TokenService {
                         .status(ex.getStatusCode().value())
                         .data(new ArrayList<>())
                         .build(), ex.getStatusCode());
-            }catch(Exception e){
+            } catch (Exception e) {
                 log.info(String.valueOf(ex));
-                return new ResponseEntity<>(GlobalResponse.builder()
-                        .timestamp(LocalDateTime.now())
-                        .message("Internal Server Error : Unexpected error parsing JSON")
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                        .data(new ArrayList<>())
-                        .build(), HttpStatus.INTERNAL_SERVER_ERROR);
+                if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                    return new ResponseEntity<>(GlobalResponse.builder()
+                            .timestamp(LocalDateTime.now())
+                            .message("Username or Password incorrect")
+                            .status(HttpStatus.UNAUTHORIZED.value())
+                            .data(new ArrayList<>())
+                            .build(), HttpStatus.UNAUTHORIZED);
+                } else {
+                    return new ResponseEntity<>(GlobalResponse.builder()
+                            .timestamp(LocalDateTime.now())
+                            .message("Internal Server Error : Unexpected error parsing JSON")
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                            .data(new ArrayList<>())
+                            .build(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             }
         }
 

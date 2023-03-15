@@ -1,10 +1,8 @@
 package com.beyonder.authservice.controller;
 
 import com.beyonder.authservice.dto.*;
-import com.beyonder.authservice.entity.User;
 import com.beyonder.authservice.service.TokenService;
 
-import com.beyonder.authservice.service.impl.JpaUserDetailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

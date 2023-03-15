@@ -2,6 +2,9 @@ package com.beyonder.gatewayservice.filter;
 
 import com.beyonder.gatewayservice.dto.GlobalResponse;
 import com.beyonder.gatewayservice.dto.UserDTO;
+import com.beyonder.gatewayservice.exception.GlobalExceptionHandler;
+import com.beyonder.gatewayservice.exception.UnauthorizedException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -29,35 +32,35 @@ public class AppFilter implements GatewayFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
-        ServerHttpRequest request =  exchange.getRequest();
-        final List<String> apiEndpoints = List.of("/api/v1/auth/register", "/api/v1/auth/login");
+        ServerHttpRequest request = exchange.getRequest();
+        final List<String> unsecuredEndpoints = List.of("/api/v1/auth/register", "/api/v1/auth/login");
 
-        Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream()
-                .noneMatch(uri -> r.getURI().getPath().contains(uri));
-        if (isApiSecured.test(request)) {
-            if (!request.getHeaders().containsKey("Authorization")) {
-                ServerHttpResponse response = exchange.getResponse();
-                response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                return response.setComplete();
-            }
+        if (!unsecuredEndpoints.contains(request.getURI().getPath()) && !request.getHeaders().containsKey("Authorization")) {
+            log.info(String.valueOf(exchange));
+            throw new UnauthorizedException();
+        }
+
+        if (!unsecuredEndpoints.contains(request.getURI().getPath())) {
             final String token = request.getHeaders().getOrEmpty("Authorization").get(0);
             String newToken = token.split(" ")[1];
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(newToken);
 
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> response = restTemplate.exchange("http://auth-service:8086/api/v1/auth/detail-user", HttpMethod.GET, entity, String.class);
-            try{
+            try {
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+                ResponseEntity<String> response = restTemplate.exchange("http://auth-service:8086/api/v1/auth/detail-user", HttpMethod.GET, entity, String.class);
+
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode jsonNode = objectMapper.readTree(response.getBody());
                 String role = jsonNode.get("data").get(0).get("role").asText();
                 Integer userId = jsonNode.get("data").get(0).get("user_id").asInt();
                 exchange.getRequest().mutate().header("role", String.valueOf(role)).build();
                 exchange.getRequest().mutate().header("id", String.valueOf(userId)).build();
-            }catch(Exception e){
-                throw new RuntimeException("Unexpected error while get detail user Response("+response+")"+e);
+            } catch (Exception e) {
+                throw new UnauthorizedException();
             }
         }
+
         return chain.filter(exchange);
     }
 }
