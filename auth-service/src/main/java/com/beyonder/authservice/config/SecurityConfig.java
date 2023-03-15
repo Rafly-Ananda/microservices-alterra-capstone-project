@@ -42,6 +42,8 @@ public class SecurityConfig {
                 .authorizeRequests(auth -> {
                      auth.antMatchers("/api/v1/auth/login").permitAll();
                      auth.antMatchers("/api/v1/auth/register").permitAll();
+                    auth.antMatchers("/api/v1/auth/registerv2").permitAll();
+                    auth.antMatchers("/api/v1/auth/loginv2").permitAll();
                      auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

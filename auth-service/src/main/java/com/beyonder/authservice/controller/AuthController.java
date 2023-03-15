@@ -1,7 +1,6 @@
 package com.beyonder.authservice.controller;
 
-import com.beyonder.authservice.dto.ResponseDTO;
-import com.beyonder.authservice.dto.UserDTO;
+import com.beyonder.authservice.dto.*;
 import com.beyonder.authservice.entity.User;
 import com.beyonder.authservice.service.TokenService;
 
@@ -23,42 +22,19 @@ import java.util.List;
 @Slf4j
 public class AuthController {
     private final TokenService tokenService;
-    private final AuthenticationManager authenticationManager;
-    private final JpaUserDetailService jpaUserDetailService;
+
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> addUser(@RequestBody UserDTO userDTO) {
-        tokenService.addUser(userDTO);
-        return new ResponseEntity<ResponseDTO>(ResponseDTO.builder()
-                .httpStatus(HttpStatus.CREATED)
-                .message("success add user")
-                .data(userDTO).build(), HttpStatus.CREATED);
+    public ResponseEntity<GlobalResponse> registerUser(@RequestBody CreateUserRequestDTO userRequest) {
+        return tokenService.registerUser(userRequest);
     }
+
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO<String>> token(@RequestBody User user) {
-
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-        String token = tokenService.generatedToken(authentication);
-        return new ResponseEntity(ResponseDTO.builder().httpStatus(HttpStatus.OK).message("token created").data(token).build(), HttpStatus.OK);
-
+    public ResponseEntity<GlobalResponse> loginUser(@RequestBody LoginUserRequestDTO loginUserRequestDTO) {
+        return tokenService.loginUser(loginUserRequestDTO);
     }
-    @GetMapping("/user-data")
-    public ResponseEntity<ResponseDTO<Object>> userInfo(@RequestHeader(name = "Authorization") String tokenBearer) {
 
-        UserDTO user = tokenService.decodeToken(tokenBearer);
-
-        //add deeper structure
-        return new ResponseEntity(ResponseDTO.builder().httpStatus(HttpStatus.OK).message("token found").data(user).build(), HttpStatus.OK);
-        // return user;
-    }
-    //user
-    @GetMapping("/user-data-2")
-    public ResponseEntity<UserDTO> userInfo2(@RequestHeader(name = "Authorization") String tokenBearer) {
-        UserDTO user = tokenService.decodeToken(tokenBearer);
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-    @GetMapping("/all-users")
-    public ResponseEntity<List<UserDTO>> allUsers() {
-        log.info("AuthController method allUsers");
-        return new ResponseEntity<>(jpaUserDetailService.getAll(), HttpStatus.OK);
+    @GetMapping("/detail-user")
+    public ResponseEntity<GlobalResponse> detailUserByToken(@RequestHeader(name = "Authorization") String tokenBearer) {
+        return tokenService.detailUserByToken(tokenBearer);
     }
 }

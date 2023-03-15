@@ -15,7 +15,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer user_id;
     @Column(unique = true, nullable = false)
     private String username;
@@ -25,4 +25,6 @@ public class UserEntity {
     private String password;
     @Column( nullable = false)
     private String role;
+
+
 }

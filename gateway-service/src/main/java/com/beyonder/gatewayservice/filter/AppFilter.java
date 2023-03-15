@@ -1,6 +1,9 @@
 package com.beyonder.gatewayservice.filter;
 
+import com.beyonder.gatewayservice.dto.GlobalResponse;
 import com.beyonder.gatewayservice.dto.UserDTO;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -43,13 +46,17 @@ public class AppFilter implements GatewayFilter {
             headers.setBearerAuth(newToken);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<UserDTO> response;
-//            response = restTemplate.exchange("http://localhost:8085/api/v1/auth/user-data-2", HttpMethod.GET, entity, UserDTO.class);
-            response = restTemplate.exchange("http://auth-service:8086/api/v1/auth/user-data-2", HttpMethod.GET, entity, UserDTO.class);
-
-            exchange.getRequest().mutate().header("role", String.valueOf(Objects.requireNonNull(response.getBody()).getRole())).build();
-            exchange.getRequest().mutate().header("id", String.valueOf(response.getBody().getId())).build();
+            ResponseEntity<String> response = restTemplate.exchange("http://auth-service:8086/api/v1/auth/detail-user", HttpMethod.GET, entity, String.class);
+            try{
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(response.getBody());
+                String role = jsonNode.get("data").get(0).get("role").asText();
+                Integer userId = jsonNode.get("data").get(0).get("user_id").asInt();
+                exchange.getRequest().mutate().header("role", String.valueOf(role)).build();
+                exchange.getRequest().mutate().header("id", String.valueOf(userId)).build();
+            }catch(Exception e){
+                throw new RuntimeException("Unexpected error while get detail user Response("+response+")"+e);
+            }
         }
         return chain.filter(exchange);
     }
