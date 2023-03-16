@@ -29,5 +29,11 @@ public class UserEntity {
     private String password;
     @Column( nullable = false)
     private String role;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createAt;
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
 }

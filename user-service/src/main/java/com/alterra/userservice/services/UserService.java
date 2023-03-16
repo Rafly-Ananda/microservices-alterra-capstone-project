@@ -53,6 +53,8 @@ public class UserService {
                 .username(response.getUsername())
                 .email(response.getEmail())
                 .role(response.getRole())
+                .createAt(response.getCreateAt())
+                .updatedAt(response.getUpdatedAt())
                 .build();
 
         return new ResponseEntity<>(GlobalResponse.builder()
@@ -91,9 +93,11 @@ public class UserService {
         user.setEmail(userEntity.getEmail());
         user.setRole(userEntity.getRole());
 
-        if (!userEntity.getPassword().isEmpty()) {
-            String encryptedPass = encryptionService.passwordEncryptor(userEntity.getPassword());
-            user.setPassword(encryptedPass);
+        if (userEntity.getPassword() != null) {
+            if (!userEntity.getPassword().isEmpty()) {
+                String encryptedPass = encryptionService.passwordEncryptor(userEntity.getPassword());
+                user.setPassword(encryptedPass);
+            }
         }
 
         UserEntity updatedUser = userRepository.save(user);
@@ -102,6 +106,8 @@ public class UserService {
                 .username(updatedUser.getUsername())
                 .email(updatedUser.getEmail())
                 .role(updatedUser.getRole())
+                .createAt(updatedUser.getCreateAt())
+                .updatedAt(updatedUser.getUpdatedAt())
                 .build();
 
         return new ResponseEntity<>(GlobalResponse.builder()
@@ -173,6 +179,8 @@ public class UserService {
                 .username(userEntity.getUsername())
                 .email(userEntity.getEmail())
                 .role(userEntity.getRole())
+                .createAt(userEntity.getCreateAt())
+                .updatedAt(userEntity.getUpdatedAt())
                 .build();
     }
 
