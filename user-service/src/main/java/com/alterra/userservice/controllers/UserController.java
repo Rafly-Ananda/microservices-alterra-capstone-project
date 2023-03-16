@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
     private final EncryptionService encryptionService;
@@ -42,7 +43,7 @@ public class UserController {
         return userService.getSingleUser(id);
     }
 
-    @PatchMapping("{id}")
+    @PutMapping("{id}")
     public ResponseEntity<GlobalResponse> updateUser(@RequestBody UserEntity userEntity, @PathVariable Integer id) {
         return userService.updateUser(userEntity, id);
     }

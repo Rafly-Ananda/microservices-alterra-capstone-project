@@ -120,6 +120,7 @@ public class ProductService {
                 product.setCategory_id(productEntity.getCategory_id());
                 product.setName(productEntity.getName());
                 product.setPrice(productEntity.getPrice());
+                product.setDescription(product.getDescription());
                 product.setStock(productEntity.getStock());
                 log.info("Updating Product");
                 productRepository.save(product);
