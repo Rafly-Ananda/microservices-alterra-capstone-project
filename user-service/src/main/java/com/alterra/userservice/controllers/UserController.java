@@ -1,8 +1,8 @@
 package com.alterra.userservice.controllers;
 
 import com.alterra.userservice.dtos.GlobalResponse;
+import com.alterra.userservice.dtos.LoginUserRequest;
 import com.alterra.userservice.dtos.UserRequest;
-import com.alterra.userservice.dtos.UserResponse;
 import com.alterra.userservice.entities.UserEntity;
 import com.alterra.userservice.services.EncryptionService;
 import com.alterra.userservice.services.UserService;
@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -51,6 +49,15 @@ public class UserController {
     @DeleteMapping("{id}")
     public ResponseEntity<GlobalResponse> deleteUser(@PathVariable Integer id){
         return userService.deleteUser(id);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<GlobalResponse> verifyUser(@Valid @RequestBody LoginUserRequest loginUserRequest) {
+        return userService.verifyCredential(loginUserRequest);
+    }
+    @GetMapping("/find")
+    public ResponseEntity<GlobalResponse> findByUsername(@RequestParam("username") String username) {
+        return userService.findByUsername(username);
     }
 
 }

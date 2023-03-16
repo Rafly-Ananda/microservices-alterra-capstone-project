@@ -33,6 +33,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(globalResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<GlobalResponse> handleUsernameNotFoundException(
+            UsernameNotFoundException ex, WebRequest request) {
+
+        GlobalResponse globalResponse = GlobalResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message(ex.getMessage())
+                .status(404)
+                .data(null)
+                .build();
+
+        return new ResponseEntity<>(globalResponse, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(UsernameAlreadyUsedException.class)
     public ResponseEntity<GlobalResponse> handleUsernameAlreadyUsedException(

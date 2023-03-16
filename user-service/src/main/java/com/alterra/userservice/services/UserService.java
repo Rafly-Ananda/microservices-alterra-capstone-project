@@ -1,24 +1,29 @@
 package com.alterra.userservice.services;
 
 import com.alterra.userservice.dtos.GlobalResponse;
+import com.alterra.userservice.dtos.LoginUserRequest;
 import com.alterra.userservice.dtos.UserRequest;
 import com.alterra.userservice.dtos.UserResponse;
 import com.alterra.userservice.entities.UserEntity;
 import com.alterra.userservice.exceptions.EmailAlreadyUsedException;
 import com.alterra.userservice.exceptions.UserNotFoundException;
 import com.alterra.userservice.exceptions.UsernameAlreadyUsedException;
+import com.alterra.userservice.exceptions.UsernameNotFoundException;
 import com.alterra.userservice.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
@@ -122,6 +127,50 @@ public class UserService {
                 .status(200)
                 .data(List.of(user))
                 .build(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<GlobalResponse> findByUsername(String username){
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException((username)));
+        return new ResponseEntity<>(GlobalResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message("Username found")
+                .status(200)
+                .data(List.of(user))
+                .build(), HttpStatus.OK);
+
+    }
+    public ResponseEntity<GlobalResponse> verifyCredential(LoginUserRequest loginUserRequest){
+        if(!userRepository.findByUsername(loginUserRequest.getUsername()).isPresent()) {
+            return new ResponseEntity<>(GlobalResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .message("Username not found ")
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .data(Collections.singletonList(userRepository.findByUsername(loginUserRequest.getUsername())))
+                    .build(), HttpStatus.NOT_FOUND);
+        }else{
+            Optional<UserEntity> userData = userRepository.findByUsername(loginUserRequest.getUsername());
+            //match both plain
+            String plainPassRequest = loginUserRequest.getPassword();
+            String decryptedPassDB = encryptionService.passwordDecoder(userData.get().getPassword());
+
+            if (plainPassRequest.equals(decryptedPassDB)) {
+                // Passwords match, combination is valid
+                return new ResponseEntity<>(GlobalResponse.builder()
+                        .timestamp(LocalDateTime.now())
+                        .message("Username and Password valid")
+                        .status(HttpStatus.OK.value())
+                        .data(Collections.singletonList(userRepository.findByUsername(loginUserRequest.getUsername())))
+                        .build(), HttpStatus.OK);
+            } else {
+                // Passwords do not match, combination is invalid
+                return new ResponseEntity<>(GlobalResponse.builder()
+                        .timestamp(LocalDateTime.now())
+                        .message("Username or Password incorrect")
+                        .status(HttpStatus.UNAUTHORIZED.value())
+                        .data(Collections.singletonList("Invalid credentials"))
+                        .build(), HttpStatus.UNAUTHORIZED);
+            }
+        }
     }
 
     private UserResponse mapToUserResponse(UserEntity userEntity) {

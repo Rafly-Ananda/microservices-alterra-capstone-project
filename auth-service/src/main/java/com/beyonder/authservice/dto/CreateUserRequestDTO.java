@@ -1,15 +1,11 @@
-package com.beyonder.gatewayservice.dto;
+package com.beyonder.authservice.dto;
 
 import lombok.*;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
-@Builder
-@ToString
-public class UserDTO {
-    private Integer user_id;
+public class CreateUserRequestDTO {
     private String username;
     private String email;
     private String password;
