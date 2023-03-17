@@ -20,6 +20,7 @@ public class GatewayConfiguration {
     private static final String CATEGORY_SERVICE_URL = "http://category-service:8083/";
     private static final String PRODUCT_SERVICE_URL = "http://product-service:8084/";
     private static final String ORDER_SERVICE_URL = "http://order-service:8085/";
+
     @Bean
     RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
@@ -55,7 +56,6 @@ public class GatewayConfiguration {
                 // PRODUCT_SERVICE_URL
                 .route(r -> r.path("/api/v1/products/**")
                         .and().method("GET")
-                        .filters(f -> f.filter(filter))
                         .uri(PRODUCT_SERVICE_URL))
                 .route(r -> r.path("/api/v1/products/**")
                         .and().method("POST", "PUT", "DELETE")

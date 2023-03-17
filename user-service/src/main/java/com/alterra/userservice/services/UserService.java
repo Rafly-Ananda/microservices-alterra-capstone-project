@@ -130,7 +130,7 @@ public class UserService {
     }
 
     public ResponseEntity<GlobalResponse> findByUsername(String username){
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException((username)));
+        UserResponse user = userRepository.findByUsername(username).map(this::mapToUserResponse).orElseThrow(() -> new UsernameNotFoundException((username)));
         return new ResponseEntity<>(GlobalResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .message("Username found")

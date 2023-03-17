@@ -1,4 +1,4 @@
-APP_IMAGE_LIST ?= user-service category-service product-service auth-service gateaway-service
+APP_IMAGE_LIST ?= user-service category-service product-service auth-service gateaway-service order-service db user-db redis
 
 start : down remove up
 

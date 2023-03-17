@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -150,11 +152,16 @@ public class TokenServiceImpl implements TokenService {
             String data = jwtToken.getSubject();
             log.info("login as " + data);
 
+            var selectedUser = restTemplate.getForEntity(UserServiceUrl + "/find?username=" + data , GlobalResponse.class);
+
+            Map<String, Object> res = new HashMap<>();
+            res.put("token", token);
+            res.put("user", selectedUser.getBody().getData().get(0));
             return new ResponseEntity<>(GlobalResponse.builder()
                     .timestamp(LocalDateTime.now())
                     .message("token created")
                     .status(response.getStatusCodeValue())
-                    .data(Collections.singletonList(token))
+                    .data(Collections.singletonList(res))
                     .build(), response.getStatusCode());
 
         } catch (HttpClientErrorException ex) {

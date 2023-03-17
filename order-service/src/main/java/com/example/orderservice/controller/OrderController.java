@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/orders")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 public class OrderController {
     private OrderService orderService;
     private OrderStateService orderStateService;
@@ -41,6 +40,10 @@ public class OrderController {
     public ResponseEntity<GlobalResponse> updateOrder(@PathVariable Long id, @RequestBody ChangStateOrderDTO stateOrderDTO) {
         return orderService.updateStateOrder(id,stateOrderDTO.getOrder_state());
     }
+//
+//    @PostMapping("/payment/{id}")
+//    public ResponseEntity<GlobalResponse> updatePayment(@PathVariable long id, )
+
     @PutMapping("/cancel-state-order/{order_id}")
     public ResponseEntity<GlobalResponse> cancelOrder(@PathVariable Long order_id) {
         return orderService.cancelOrderByOrderId(order_id);

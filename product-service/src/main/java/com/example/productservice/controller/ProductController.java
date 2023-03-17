@@ -30,7 +30,6 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/api/v1/products")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 public class ProductController {
     private ProductService productService;
     private AwsS3BucketStorageService awsS3BucketStorageService;

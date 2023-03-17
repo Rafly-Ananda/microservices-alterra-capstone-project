@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/s3")
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
 public class AwsS3BucketStorageController {
 
     @Autowired
