@@ -65,7 +65,7 @@ public class ProductController {
         ObjectMapper objectMapper = new ObjectMapper();
 
         if (images != null) {
-            System.out.println("saving");
+            log.info("saving to s3");
             List<String> uploadResponse = awsS3BucketStorageService.uploadFile(images);
             s3Keys.addAll(uploadResponse);
         }
@@ -83,8 +83,35 @@ public class ProductController {
                 .build(), HttpStatus.CREATED);
     }
 
+    @PutMapping("/image/{id}")
+    @SneakyThrows
+    public ResponseEntity<GlobalResponse<ProductEntity>> updateWithImage(@RequestPart("product") String product,
+                                                                @RequestPart(value = "images", required = false) List<MultipartFile> images,
+                                                                @PathVariable Long id){
+        List<String> s3Keys = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        if (images != null) {
+            log.info("saving to s3");
+            List<String> uploadResponse = awsS3BucketStorageService.uploadFile(images);
+            s3Keys.addAll(uploadResponse);
+        }
+
+        ProductRequestDTO newProductRequest = objectMapper.readValue(product, ProductRequestDTO.class);
+        s3Keys.addAll(newProductRequest.getImages());
+        newProductRequest.setImages(s3Keys);
+
+        ProductEntity updatedProduct = productService.update(newProductRequest, id);
+        return new ResponseEntity<>(GlobalResponse.<ProductEntity>builder()
+                .timestamp(LocalDateTime.now())
+                .message("Product " + id + " Updated.")
+                .status(HttpStatus.OK.value())
+                .data(List.of(updatedProduct))
+                .build(), HttpStatus.OK);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<GlobalResponse<ProductEntity>> update(@RequestBody ProductEntity product,@PathVariable Long id){
+    public ResponseEntity<GlobalResponse<ProductEntity>> update(@RequestBody ProductRequestDTO product,@PathVariable Long id){
         ProductEntity updatedProduct = productService.update(product,id);
         return new ResponseEntity<>(GlobalResponse.<ProductEntity>builder()
                 .timestamp(LocalDateTime.now())
