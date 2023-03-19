@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
@@ -153,6 +155,14 @@ public class OrderService {
                 String ProductDescription = root.path("data").path(0).path("product").path("description").asText();
                 Double ProductPrice = root.path("data").path(0).path("product").path("price").asDouble();
                 Integer ProductStock = root.path("data").path(0).path("product").path("stock").asInt();
+                JsonNode imagesNode = root.path("data").path(0).path("product").path("images");
+                List<String> productImages = new ArrayList<>();
+                if (imagesNode.isArray()) {
+                    for (JsonNode imageNode : imagesNode) {
+                        String imageUrl = imageNode.asText();
+                        productImages.add(imageUrl);
+                    }
+                }
 
                 ProductDTO updateProductRequestBody = new ProductDTO();
                 updateProductRequestBody.setCategory_id(ProductCategoryId);
@@ -160,6 +170,7 @@ public class OrderService {
                 updateProductRequestBody.setName(ProductName);
                 updateProductRequestBody.setDescription(ProductDescription);
                 updateProductRequestBody.setPrice(ProductPrice);
+                updateProductRequestBody.setImages(productImages);
                 //cari selisih stock
                 Integer stockExisting = ProductStock;
                 Integer stockRemaining = stockExisting - orderedProductQty;

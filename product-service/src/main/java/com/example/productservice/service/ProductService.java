@@ -95,7 +95,7 @@ public class ProductService {
         return productRepository.save(newProduct);
     }
 
-    public ProductEntity update(ProductEntity productEntity, Long id) {
+    public ProductEntity update(ProductRequestDTO productEntity, Long id) {
         ProductEntity product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
 
         RestTemplate restTemplate = new RestTemplate();
@@ -120,8 +120,10 @@ public class ProductService {
                 product.setCategory_id(productEntity.getCategory_id());
                 product.setName(productEntity.getName());
                 product.setPrice(productEntity.getPrice());
-                product.setDescription(product.getDescription());
+                product.setDescription(productEntity.getDescription());
                 product.setStock(productEntity.getStock());
+                product.setImages(productEntity.getImages());
+
                 log.info("Updating Product");
                 productRepository.save(product);
                 return product;

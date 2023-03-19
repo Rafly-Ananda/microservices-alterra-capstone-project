@@ -61,6 +61,10 @@ public class GatewayConfiguration {
                         .and().method("POST", "PUT", "DELETE")
                         .filters(f -> f.filter(filter).filter(adminFilter))
                         .uri(PRODUCT_SERVICE_URL))
+                // S3_SERVICE_URL
+                .route(r -> r.path("/api/v1/s3/**")
+                        .and().method("GET", "DELETE")
+                        .uri(PRODUCT_SERVICE_URL))
                 // ORDER_SERVICE_URL
                 .route(r -> r.path("/api/v1/orders/**")
                         .and().method( "GET","POST","PUT")

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -40,9 +41,12 @@ public class OrderController {
     public ResponseEntity<GlobalResponse> updateOrder(@PathVariable Long id, @RequestBody ChangStateOrderDTO stateOrderDTO) {
         return orderService.updateStateOrder(id,stateOrderDTO.getOrder_state());
     }
+
+//    @PutMapping("/payment/{id}")
+//    public ResponseEntity<GlobalResponse> updatePayment(@RequestPart(value = "images") List<MultipartFile> images,
+//                                                        @PathVariable long id ) {
 //
-//    @PostMapping("/payment/{id}")
-//    public ResponseEntity<GlobalResponse> updatePayment(@PathVariable long id, )
+//    }
 
     @PutMapping("/cancel-state-order/{order_id}")
     public ResponseEntity<GlobalResponse> cancelOrder(@PathVariable Long order_id) {
