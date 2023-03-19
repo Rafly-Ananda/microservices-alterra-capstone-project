@@ -21,6 +21,8 @@ import java.util.List;
 public class OrderController {
     private OrderService orderService;
     private OrderStateService orderStateService;
+
+
     @GetMapping
     public ResponseEntity<GlobalResponse> getOrder() {
         return orderService.getAll();
@@ -42,11 +44,11 @@ public class OrderController {
         return orderService.updateStateOrder(id,stateOrderDTO.getOrder_state());
     }
 
-//    @PutMapping("/payment/{id}")
-//    public ResponseEntity<GlobalResponse> updatePayment(@RequestPart(value = "images") List<MultipartFile> images,
-//                                                        @PathVariable long id ) {
-//
-//    }
+    @PutMapping("/payment/{id}")
+    public ResponseEntity<GlobalResponse> updatePayment(@RequestPart(value = "images") List<MultipartFile> images,
+                                                        @PathVariable long id ) {
+        return orderService.updatePaymentProof(images, id);
+    }
 
     @PutMapping("/cancel-state-order/{order_id}")
     public ResponseEntity<GlobalResponse> cancelOrder(@PathVariable Long order_id) {

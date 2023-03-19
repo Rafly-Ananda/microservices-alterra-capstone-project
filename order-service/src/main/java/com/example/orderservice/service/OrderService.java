@@ -17,11 +17,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -206,6 +208,33 @@ public class OrderService {
                 .message("Order Created.")
                 .status(200)
                 .data(List.of(request.getOrder(), request.getOrderDetail()))
+                .build(), HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<GlobalResponse> updatePaymentProof(List<MultipartFile> images, long id) {
+        OrderEntity order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException((id)));
+        StatusEntity status = statusRepository.findById(order.getStatus().getStatus_id()).orElseThrow(() -> new OrderStateNotFoundException((int) id));
+        String awsServiceUrl = "http://product-service:8084/api/v1/s3";
+
+        MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
+        for (MultipartFile image : images) {
+            bodyMap.add("images", image.getResource());
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
+        ResponseEntity<GlobalResponse<String>> responseEntity = restTemplate.exchange(awsServiceUrl, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<GlobalResponse<String>>() {});
+
+        status.setPayment_proof((String) responseEntity.getBody().getData().get(0));
+
+        statusRepository.save(status);
+
+        return new ResponseEntity<>(GlobalResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message("Payment proof added.")
+                .status(200)
+                .data(List.of(status))
                 .build(), HttpStatus.CREATED);
     }
 
