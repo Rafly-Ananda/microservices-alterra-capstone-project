@@ -38,6 +38,7 @@ jobs:
           
   unit-test-job:
     runs-on: ubuntu-latest
+    container: maven:latest
     steps:
     - uses: actions/checkout@v2
     - name: Unit Test job
