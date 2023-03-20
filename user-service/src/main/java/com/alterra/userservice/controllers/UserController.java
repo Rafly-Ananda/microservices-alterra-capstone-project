@@ -1,23 +1,28 @@
 package com.alterra.userservice.controllers;
 
-import com.alterra.userservice.dtos.GlobalResponse;
-import com.alterra.userservice.dtos.LoginUserRequest;
-import com.alterra.userservice.dtos.UserRequest;
+import com.alterra.userservice.dtos.*;
 import com.alterra.userservice.entities.UserEntity;
 import com.alterra.userservice.services.EncryptionService;
+import com.alterra.userservice.services.RabbitMQProducerService;
 import com.alterra.userservice.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@EnableRabbit
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final EncryptionService encryptionService;
+    private final RabbitMQProducerService rabbitMQProducerService;
 
     @GetMapping("/health")
     @ResponseStatus(HttpStatus.OK)
@@ -27,7 +32,21 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<GlobalResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
-        return userService.createUser(userRequest);
+        UserResponse createdUser = userService.createUser(userRequest);
+
+        EmailRequest msg = new EmailRequest();
+        msg.setTo(createdUser.getEmail());
+        msg.setSubject("AlterraCommerce Registration ✨");
+        msg.setBodyText("Hey, thank you for registering. Amazing deals, and interesting products are coming your way!");
+        rabbitMQProducerService.sendJsonMessage(msg);
+
+
+        return new ResponseEntity<>(GlobalResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message("User Created.")
+                .status(200)
+                .data(List.of(createdUser))
+                .build(), HttpStatus.CREATED);
     }
 
     @GetMapping
