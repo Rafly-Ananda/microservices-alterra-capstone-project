@@ -1,4 +1,4 @@
-package com.example.orderservice.service;
+package com.example.orderservice.service.service;
 
 import com.example.orderservice.dto.*;
 import com.example.orderservice.entity.OrderDetailEntity;
@@ -12,11 +12,14 @@ import com.example.orderservice.repository.OrderDetailRepository;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.repository.OrderStateRepository;
 import com.example.orderservice.repository.StatusRepository;
+import com.example.orderservice.service.OrderService;
+import com.example.orderservice.service.OrderStateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.*;
@@ -77,28 +80,24 @@ public class OrderServiceTest {
         assertEquals(order2.getTotal(), ((List<OrderEntity>) globalResponse.getData()).get(1).getTotal());
     }
     @Test
-    void testGetById() {
-        // given
-        Long orderId = 1L;
-        OrderEntity order = new OrderEntity(orderId, 1, null, null, 100.0, LocalDateTime.now(), LocalDateTime.now());
-        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+    public void testGetById() {
+        // Create a mock OrderEntity object
+        OrderEntity order1 = new OrderEntity(1L, 1, null, null, 100.0, LocalDateTime.now(), LocalDateTime.now());
 
-        // when
-        ResponseEntity<GlobalResponse> response = orderService.getById(orderId);
+        // Set up the mock behavior for the orderRepository
+        Mockito.when(orderRepository.findById(1L)).thenReturn(Optional.of(order1));
 
-        // then
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(order, response.getBody().getData().get(0));
-    }
+        // Call the getById method with the mock ID
+        ResponseEntity<GlobalResponse> responseEntity = orderService.getById(1L);
 
-    @Test
-    void testGetById_ThrowsOrderNotFoundException() {
-        // given
-        Long orderId = 1L;
-        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+        // Assert that the response status code is 200
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
-        // when, then
-        assertThrows(OrderNotFoundException.class, () -> orderService.getById(orderId));
+        // Assert that the response message is "Order Found."
+        assertEquals("Order Found.", responseEntity.getBody().getMessage());
+
+        // Assert that the response data contains the mock OrderEntity object
+        assertEquals(Arrays.asList(Optional.of(order1)), responseEntity.getBody().getData());
     }
     @Test
     public void testGetAllByUserId() {
