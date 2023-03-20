@@ -30,7 +30,7 @@ public class UserService {
     private final EncryptionService encryptionService;
 
 
-    public ResponseEntity<GlobalResponse> createUser(UserRequest userRequest) {
+    public UserResponse createUser(UserRequest userRequest) {
         String encryptedPass = encryptionService.passwordEncryptor(userRequest.getPassword());
         UserEntity userEntity = UserEntity.builder()
                 .username(userRequest.getUsername())
@@ -48,7 +48,8 @@ public class UserService {
         }
 
         UserEntity response = userRepository.save(userEntity);
-        UserResponse userSanitized = UserResponse.builder()
+
+        return UserResponse.builder()
                 .user_id(response.getUser_id())
                 .username(response.getUsername())
                 .email(response.getEmail())
@@ -56,13 +57,6 @@ public class UserService {
                 .createAt(response.getCreateAt())
                 .updatedAt(response.getUpdatedAt())
                 .build();
-
-        return new ResponseEntity<>(GlobalResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .message("User Created.")
-                .status(200)
-                .data(List.of(userSanitized))
-                .build(), HttpStatus.CREATED);
     }
 
     public ResponseEntity<GlobalResponse> getAllUser() {
