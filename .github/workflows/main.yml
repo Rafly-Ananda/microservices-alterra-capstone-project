@@ -12,22 +12,22 @@ jobs:
       - name: Build job
         run: |
           cd auth-service
-          mvn compile -Dmaven.compiler.target=${LATEST_VERSION}.
+          mvn compile -Dmaven.compiler.target=11.
           cd ../
           cd category-service
-          mvn compile -Dmaven.compiler.target=${LATEST_VERSION}.
+          mvn compile -Dmaven.compiler.target=17.
           cd ../
           cd gateway-service
-          mvn compile -Dmaven.compiler.target=${LATEST_VERSION}.
+          mvn compile -Dmaven.compiler.target=11.
            cd ../
           cd order-service
-          mvn compile -Dmaven.compiler.target=${LATEST_VERSION}.
+          mvn compile -Dmaven.compiler.target=17.
           cd ../
           cd product-service
-          mvn compile -Dmaven.compiler.target=${LATEST_VERSION}.
+          mvn compile -Dmaven.compiler.target=17.
           cd ../
           cd user-service
-          mvn compile -Dmaven.compiler.target=${LATEST_VERSION}.
+          mvn compile -Dmaven.compiler.target=17.
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
