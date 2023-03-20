@@ -8,8 +8,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build job
       run: |
-        cd product-service-testing
-        mvn compile
         cd auth-service
         mvn compile
         cd category-service
