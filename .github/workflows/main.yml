@@ -1,0 +1,50 @@
+on: [push]
+name: CI/CD
+
+jobs:
+  build-job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build job
+      run: |
+        cd product-service-testing
+        mvn compile
+        cd auth-service
+        mvn compile
+        cd category-service
+        mvn compile
+        cd gateway-service
+        mvn compile
+        cd order-service
+        mvn compile
+        cd product-service
+        mvn compile
+        cd user-service
+        mvn compile
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: .m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+          
+  unit-test-job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Unit Test job
+      run: |
+        cd auth-service
+        mvn test
+        cd category-service
+        mvn test
+        cd gateway-service
+        mvn test
+        cd order-service
+        mvn test
+        cd product-service
+        mvn test
+        cd user-service
+        mvn test
