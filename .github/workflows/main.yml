@@ -8,17 +8,21 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build job
       run: |
-        cd ../
         cd auth-service
         mvn compile
+        cd ../
         cd category-service
         mvn compile
+        cd ../
         cd gateway-service
         mvn compile
+         cd ../
         cd order-service
         mvn compile
+         cd ../
         cd product-service
         mvn compile
+         cd ../
         cd user-service
         mvn compile
     - name: Cache dependencies
@@ -37,13 +41,18 @@ jobs:
       run: |
         cd auth-service
         mvn test
+         cd ../
         cd category-service
         mvn test
+         cd ../
         cd gateway-service
         mvn test
+         cd ../
         cd order-service
         mvn test
+         cd ../
         cd product-service
         mvn test
+         cd ../
         cd user-service
         mvn test
