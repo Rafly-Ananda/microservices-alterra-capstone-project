@@ -1,7 +1,8 @@
-package com.example.orderservice.service;
+package com.example.orderservice.service.service;
 
 import com.example.orderservice.entity.OrderStateEntity;
 import com.example.orderservice.repository.OrderStateRepository;
+import com.example.orderservice.service.OrderStateService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
