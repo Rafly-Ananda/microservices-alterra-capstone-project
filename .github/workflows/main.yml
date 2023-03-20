@@ -4,12 +4,11 @@ name: CI/CD
 jobs:
   build-job:
       runs-on: ubuntu-latest
+      container: maven:lastest
+      env:
+        LATEST_VERSION: '1.8'
       steps:
       - uses: actions/checkout@v2
-      - name: Set Latest Version
-        uses: actions/env@v1
-        with:
-          LATEST_VERSION: '1.8'
       - name: Build job
         run: |
           cd auth-service
