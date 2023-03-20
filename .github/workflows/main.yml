@@ -60,3 +60,29 @@ jobs:
          cd ../
         cd user-service
         mvn test -Dmaven.compiler.target='17'
+  build_and_deploy:
+    needs: [build-job, unit-test-job]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: configure-docker-cli
+        env:
+          DOCKER_CA: ${{ secrets.DOCKER_CA }}
+          DOCKER_CERT: ${{ secrets.DOCKER_CERT }}
+          DOCKER_KEY: ${{ secrets.DOCKER_KEY }}
+          DOCKER_HOST: "tcp://ec2-13-112-146-64.ap-northeast-1.compute.amazonaws.com:2376"
+          DOCKER_TLS_VERIFY: "1"
+        run: |
+          mkdir -pv ~/.docker
+          
+          echo $DOCKER_CA | base64 --decode > ~/.docker/ca.pem
+          echo $DOCKER_CERT | base64 --decode > ~/.docker/cert.pem
+          echo $DOCKER_KEY | base64 --decode > ~/.docker/key.pem
+          docker version
+          
+      - name: build-and-deploy
+        env:
+          DOCKER_HOST: "tcp://ec2-13-112-146-64.ap-northeast-1.compute.amazonaws.com:2376"
+          DOCKER_TLS_VERIFY: "1"
+        run: |
+          make
