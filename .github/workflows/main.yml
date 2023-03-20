@@ -43,19 +43,19 @@ jobs:
     - name: Unit Test job
       run: |
         cd auth-service
-        mvn test
+        mvn test -Dmaven.compiler.target='11'
          cd ../
         cd category-service
-        mvn test
+        mvn test -Dmaven.compiler.target='17'
          cd ../
         cd gateway-service
-        mvn test
+        mvn test -Dmaven.compiler.target='11'
          cd ../
         cd order-service
-        mvn test
+        mvn test -Dmaven.compiler.target='17'
          cd ../
         cd product-service
-        mvn test
+        mvn test -Dmaven.compiler.target='17'
          cd ../
         cd user-service
-        mvn test
+        mvn test -Dmaven.compiler.target='17'
