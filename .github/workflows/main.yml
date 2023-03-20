@@ -70,7 +70,7 @@ jobs:
           DOCKER_CA: ${{ secrets.DOCKER_CA }}
           DOCKER_CERT: ${{ secrets.DOCKER_CERT }}
           DOCKER_KEY: ${{ secrets.DOCKER_KEY }}
-          DOCKER_HOST: "tcp://ec2-13-112-146-64.ap-northeast-1.compute.amazonaws.com:2376"
+          DOCKER_HOST: "tcp://ec2-3-115-101-67.ap-northeast-1.compute.amazonaws.com:2376"
           DOCKER_TLS_VERIFY: "1"
         run: |
           mkdir -pv ~/.docker
@@ -82,7 +82,7 @@ jobs:
           
       - name: build-and-deploy
         env:
-          DOCKER_HOST: "tcp://ec2-13-112-146-64.ap-northeast-1.compute.amazonaws.com:2376"
+          DOCKER_HOST: "tcp://ec2-3-115-101-67.ap-northeast-1.compute.amazonaws.com:2376"
           DOCKER_TLS_VERIFY: "1"
         run: |
           make
