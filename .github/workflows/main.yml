@@ -4,7 +4,7 @@ name: CI/CD
 jobs:
   build-job:
       runs-on: ubuntu-latest
-      container: maven:lastest
+      container: maven:latest
       env:
         LATEST_VERSION: '1.8'
       steps:
