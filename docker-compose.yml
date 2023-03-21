@@ -30,14 +30,14 @@ services:
         - SPRING_DATASOURCE_PASSWORD=user_db
         - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
         - SERVER_PORT=8086
-        - RSA_PRIVATE-KEY=/app/certs/private.pem
-        - RSA_PUBLIC-KEY=/app/certs/public.pem
+        - RSA_PRIVATE-KEY=/app/resources/certs/private.pem
+        - RSA_PUBLIC-KEY=/app/resources/certs/public.pem
       expose:
         - "8086"
       ports:
         - "8086:8086"
       volumes:
-        - ./auth-service/src/main/resources/certs:/app/certs
+        - ./src/main/resources:/app/resources:ro
 #   category-service:
 #     image: 'category-service:latest'
 #     container_name: category-service
