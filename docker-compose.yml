@@ -30,6 +30,8 @@ services:
         - SPRING_DATASOURCE_PASSWORD=user_db
         - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
         - SERVER_PORT=8086
+        - RSA_PRIVATE-KEY=classpath:certs/private.pem
+        - RSA_PUBLIC-KEY=classpath:certs/public.pem
       expose:
         - "8086"
       ports:
