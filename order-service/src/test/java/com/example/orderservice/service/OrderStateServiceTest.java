@@ -1,4 +1,4 @@
-package com.example.orderservice.service.service;
+package com.example.orderservice.service;
 
 import com.example.orderservice.entity.OrderStateEntity;
 import com.example.orderservice.repository.OrderStateRepository;

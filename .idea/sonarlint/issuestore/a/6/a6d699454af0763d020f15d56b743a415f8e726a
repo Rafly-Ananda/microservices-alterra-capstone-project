@@ -1,0 +1,44 @@
+
+`	java:S112q"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+a	java:S112„"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+a	java:S112Ã"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+E
+java:S3740*"/Provide the parametrized type for this generic.(Ö‹¢‰
+E
+java:S37404"/Provide the parametrized type for this generic.(˜ğ­ 
+D
+java:S3740B"/Provide the parametrized type for this generic.(¸ÿ¸o
+E
+java:S3740L"/Provide the parametrized type for this generic.(¿Ü¤Ñ
+K
+java:S3740Ö"/Provide the parametrized type for this generic.(ªÍ¥æøÿÿÿÿ
+K
+java:S3740ò"/Provide the parametrized type for this generic.(Ğßšáıÿÿÿÿ
+K
+java:S3740ü"/Provide the parametrized type for this generic.(¾ş‰üÿÿÿÿÿ
+F
+java:S3740Š"/Provide the parametrized type for this generic.(ƒ¢‘
+ˆ
+java:S1192W"mDefine a constant instead of duplicating this literal "http://product-service:8084/api/v1/products/" 5 times.(ß­¶¡ùÿÿÿÿ
+f
+java:S1192÷"JDefine a constant instead of duplicating this literal "Order Id " 3 times.(öÿŒâşÿÿÿÿ
+^
+java:S1192g"HDefine a constant instead of duplicating this literal "product" 7 times.(›¡÷â
+f	java:S1174"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(˜ğ­ 
+e	java:S1175"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÂÊ¿N
+k	java:S117v"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÉŸÕ‚üÿÿÿÿ
+f	java:S117w"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(€‰ÄÖ
+l	java:S117€"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(à©Ùùÿÿÿÿ
+l	java:S117›"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¸•»øıÿÿÿÿ
+g	java:S117œ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(õó´§
+g	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(  ÷Ô
+l	java:S117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(à©Ùùÿÿÿÿ
+g	java:S117Ÿ"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‹ê¼
+l	java:S117¼"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ê”áÚÿÿÿÿÿ
+l	java:S117Ê"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(À¬Ÿûÿÿÿÿ
+]
+java:S2259å"FA "NullPointerException" could be thrown; "getBody()" can return null.(™ ‘Î
+h
+java:S3776L"RRefactor this method to reduce its Cognitive Complexity from 20 to the 15 allowed.(¿Ü¤Ñ
+7
+java:S1116y"Remove this empty statement.(ÈÇÖŠıÿÿÿÿ
