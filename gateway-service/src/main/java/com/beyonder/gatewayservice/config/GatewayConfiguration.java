@@ -24,6 +24,14 @@ public class GatewayConfiguration {
     @Bean
     RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
+                //swagger
+                .route(r -> r.path("/api/user-service/**").uri(USER_SERVICE_URL))
+                .route(r -> r.path("/api/auth-service/**").uri(AUTH_SERVICE_URL))
+                .route(r -> r.path("/api/category-service/**").uri(CATEGORY_SERVICE_URL))
+                .route(r -> r.path("/api/product-service/**").uri(PRODUCT_SERVICE_URL))
+                .route(r -> r.path("/api/order-service/**").uri(ORDER_SERVICE_URL))
+
+
                 // AUTH_SERVICE_URL
                 .route(r -> r.path("/api/v1/auth/**")
                         .uri(AUTH_SERVICE_URL))

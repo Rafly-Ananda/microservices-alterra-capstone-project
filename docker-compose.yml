@@ -12,6 +12,17 @@ services:
       - spring.cloud.gateway.globalcors.corsConfigurations.[/**].allowedOrigins=*
       - spring.cloud.gateway.globalcors.corsConfigurations.[/**].allowedHeaders=*
       - spring.cloud.gateway.globalcors.corsConfigurations.[/**].allowedMethods=*
+      - springdoc.swagger-ui.path=/api-documentation
+      - springdoc.swagger-ui.urls[0].name=user-service
+      - springdoc.swagger-ui.urls[0].url=/api/user-service/v3/api-docs
+      - springdoc.swagger-ui.urls[1].name=category-service
+      - springdoc.swagger-ui.urls[1].url=/api/category-service/v3/api-docs
+      - springdoc.swagger-ui.urls[2].name=auth-service
+      - springdoc.swagger-ui.urls[2].url=/api/auth-service/v3/api-docs
+      - springdoc.swagger-ui.urls[3].name=product-service
+      - springdoc.swagger-ui.urls[3].url=/api/product-service/v3/api-docs
+      - springdoc.swagger-ui.urls[4].name=order-service
+      - springdoc.swagger-ui.urls[4].url=/api/order-service/v3/api-docs
     expose:
       - "8080"
     ports:
@@ -32,6 +43,7 @@ services:
         - SERVER_PORT=8086
         - RSA_PRIVATE-KEY=classpath:certs/private.pem
         - RSA_PUBLIC-KEY=classpath:certs/public.pem
+        - SPRINGDOC_APIDOCS_PATH=/api/auth-service/v3/api-docs
       expose:
         - "8086"
       ports:
@@ -50,6 +62,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SERVER_PORT=8083
+      - SPRINGDOC_APIDOCS_PATH=/api/category-service/v3/api-docs
     ports:
       - "8083:8083"
   product-service:
@@ -66,6 +79,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SERVER_PORT=8084
+      - SPRINGDOC_APIDOCS_PATH=/api/product-service/v3/api-docs
     ports:
       - "8084:8084"
   order-service:
@@ -85,6 +99,7 @@ services:
       - SERVER_PORT=8085
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
+      - SPRINGDOC_APIDOCS_PATH=/api/order-service/v3/api-docs
     ports:
       - "8085:8085"
   user-service:
@@ -109,6 +124,7 @@ services:
       - RABBITMQ_ROUTING_JSON_KEY=email_routing_json_key
       - QUEUE_NAME=email
       - SERVER_PORT=8082
+      - SPRINGDOC_APIDOCS_PATH=/api/user-service/v3/api-docs
     ports:
       - "8082:8082"
   email-service:

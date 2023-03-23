@@ -1,0 +1,7 @@
+
+`	java:S112P"FDefine and throw a dedicated exception instead of using a generic one.(ŽµÜšüÿÿÿÿ
+^
+java:S1192H"HDefine a constant instead of duplicating this literal "message" 3 times.(®Õæ›
+t	java:S115!"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(ÊÜ·Ïúÿÿÿÿ
+`
+java:S1124!"EReorder the modifiers to comply with the Java Language Specification.(ÊÜ·Ïúÿÿÿÿ

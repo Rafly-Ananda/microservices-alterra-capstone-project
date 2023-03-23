@@ -42,6 +42,7 @@ public class SecurityConfig {
                      auth.antMatchers("/api/v1/auth/register").permitAll();
                     auth.antMatchers("/api/v1/auth/registerv2").permitAll();
                     auth.antMatchers("/api/v1/auth/loginv2").permitAll();
+                    auth.antMatchers(AUTH_WHITELIST).permitAll();
                      auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -53,6 +54,15 @@ public class SecurityConfig {
                         .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
                 .build();
     }
+
+    private static final String[] AUTH_WHITELIST = {
+            // Swagger
+            "/api/auth-service/v3/api-docs",
+            "/swagger-ui",
+            "/webjars/**",
+            "/swagger.json",
+    };
+
 
 //    @Bean
 //    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {

@@ -1,3 +1,7 @@
 
 J
-java:S1066a"/Merge this if statement with the enclosing one.(Þ¸¼„úÿÿÿÿ
+java:S1066["/Merge this if statement with the enclosing one.(Þ¸¼„úÿÿÿÿ
+s
+java:S3655”"PCall "userData.isPresent()" or "!userData.isEmpty()" before accessing the value.(»ŽÊÅúÿÿÿÿ8ñãšãð0
+M
+java:S1128"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ8£åšãð0
