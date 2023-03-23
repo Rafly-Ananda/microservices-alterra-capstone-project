@@ -1,0 +1,25 @@
+
+€
+java:S58263"eAnnotate this method with JUnit5 '@org.junit.jupiter.api.BeforeEach' or rename it to avoid confusion.(•¨ó­úÿÿÿÿ
+4
+java:S5786S"Remove this 'public' modifier.(„Ğ©½
+4
+java:S5786g"Remove this 'public' modifier.(çºô¢
+4
+java:S5786x"Remove this 'public' modifier.(–«÷ò
+:
+java:S5786™"Remove this 'public' modifier.(µŞòäÿÿÿÿÿ
+5
+java:S5786­"Remove this 'public' modifier.(¢ıæâ
+:
+java:S5786Ú"Remove this 'public' modifier.(àç©Âşÿÿÿÿ
+:
+java:S5786ù"Remove this 'public' modifier.(½˜öıÿÿÿÿ
+:
+java:S5786Š"Remove this 'public' modifier.(Ûö§¦ùÿÿÿÿ
+9
+java:S5786$"Remove this 'public' modifier.(Æ±Û‚ıÿÿÿÿ
+n
+java:S6068"XRemove this and every subsequent useless "eq(...)" invocation; pass the values directly.(‹€£Î
+o
+java:S6068…"XRemove this and every subsequent useless "eq(...)" invocation; pass the values directly.(ŒùÑÀ
