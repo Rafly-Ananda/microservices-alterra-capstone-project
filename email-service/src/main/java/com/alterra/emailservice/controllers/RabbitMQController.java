@@ -3,6 +3,7 @@ package com.alterra.emailservice.controllers;
 import com.alterra.emailservice.dtos.EmailRequest;
 import com.alterra.emailservice.services.EmailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;

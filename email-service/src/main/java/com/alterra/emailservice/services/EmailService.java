@@ -28,6 +28,7 @@ public class EmailService {
             mailMessage.setSubject(subject);
             mailMessage.setText(body);
             javaMailSender.send(mailMessage);
+            System.out.println("email sent to " + " " + receiver);
             return "Mail Sent Successfully...";
         }
 
