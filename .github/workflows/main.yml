@@ -84,5 +84,6 @@ jobs:
         env:
           DOCKER_HOST: "tcp://ec2-3-115-101-67.ap-northeast-1.compute.amazonaws.com:2376"
           DOCKER_TLS_VERIFY: "1"
+          SECRET_VARIABLE: ${{ secrets.GMAIL_SMTP }}
         run: |
           make
