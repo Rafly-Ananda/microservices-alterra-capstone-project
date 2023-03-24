@@ -9,7 +9,7 @@ remove :
 	docker image rm -f ${APP_IMAGE_LIST}
 
 up:
-	docker compose up -d
+	docker compose up -d -e SPRING_MAIL_PASSWORD=$SPRING_MAIL_PASSWORD
 
 build:
 	docker compose build
